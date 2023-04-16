@@ -1,6 +1,7 @@
 package me.project.entitiy;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -26,10 +27,10 @@ public class Address {
     )
     private UUID addressId;
 
-    @ManyToOne
-    @JoinColumn(name = "company_id")
-    @JsonBackReference
-    private Company company;
+    @OneToOne
+    @JoinColumn(name = "user_id")
+    @JsonIgnore
+    private User user;
 
     @ManyToOne
     @JoinColumn(name = "country_id")
@@ -39,4 +40,12 @@ public class Address {
     private String streetName;
     private String postCode;
     private String city;
+
+    public Address(User user, Country country, String streetName, String postCode, String city) {
+        this.user = user;
+        this.country = country;
+        this.streetName = streetName;
+        this.postCode = postCode;
+        this.city = city;
+    }
 }

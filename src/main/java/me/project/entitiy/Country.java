@@ -31,4 +31,8 @@ public class Country {
     @OneToMany(mappedBy = "country",fetch = FetchType.LAZY)
     @JsonManagedReference
     private List<Address> addresses;
+
+    public Country(String countryName) {
+        this.countryName = countryName;
+    }
 }

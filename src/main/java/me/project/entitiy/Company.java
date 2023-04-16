@@ -1,13 +1,12 @@
 package me.project.entitiy;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
-import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -29,11 +28,15 @@ public class Company {
     private String companyName;
     private String taxNumber;
 
-    @OneToMany(mappedBy = "company",fetch = FetchType.LAZY)
-    @JsonManagedReference
-    private List<Address> addresses;
+    @OneToOne
+    @JoinColumn(name = "user_id")
+    @JsonIgnore
+    private User user;
 
-    @OneToMany(mappedBy = "company",fetch = FetchType.LAZY)
-    @JsonManagedReference
-    private List<UserCompany> userCompanies;
+    public Company(String companyName, String taxNumber, User user){
+        setCompanyName(companyName);
+        setTaxNumber(taxNumber);
+        setUser(user);
+    }
+
 }

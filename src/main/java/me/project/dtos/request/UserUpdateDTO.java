@@ -1,10 +1,10 @@
 package me.project.dtos.request;
 
-import me.project.auth.User;
 import me.project.auth.enums.AppUserRole;
 import me.project.entitiy.Address;
 import me.project.entitiy.Company;
 import lombok.Data;
+import me.project.entitiy.User;
 
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
@@ -43,7 +43,6 @@ public class UserUpdateDTO implements Serializable {
         oldUser.setLastName(LastName);
         oldUser.setPhoneNumberPrefix(PhoneNumberPrefix);
         oldUser.setPhoneNumber(PhoneNumber);
-        oldUser.setTags(Tags);
         oldUser.setNote(Note);
 
         return oldUser;
