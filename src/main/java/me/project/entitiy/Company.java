@@ -1,10 +1,7 @@
 package me.project.entitiy;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.List;
@@ -36,4 +33,10 @@ public class Company {
     @OneToMany(mappedBy = "company",fetch = FetchType.LAZY)
     @JsonManagedReference
     private List<UserCompany> userCompanies;
+
+    public Company(String companyName,String taxNumber){
+        setCompanyName(companyName);
+        setTaxNumber(taxNumber);
+    }
+
 }

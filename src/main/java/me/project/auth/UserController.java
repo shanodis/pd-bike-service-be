@@ -1,8 +1,8 @@
 package me.project.auth;
 
-import me.project.dtos.request.ChangePasswordDTO;
-import me.project.dtos.request.UserCreateDTO;
-import me.project.dtos.request.UserUpdateDTO;
+import me.project.dtos.request.user.ChangePasswordDTO;
+import me.project.dtos.request.user.UserCreateDTO;
+import me.project.dtos.request.user.UserUpdateDTO;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -35,9 +35,9 @@ public class UserController {
         iUserService.updateAppUser(id, userCredentials);
     }
 
-    @PatchMapping("change-user-password")
-    public void changeUserPassword(ChangePasswordDTO changePasswordDTO) {
-        iUserService.changeUserPassword(changePasswordDTO);
+    @PatchMapping("change-user-password/{id}")
+    public void changeUserPassword(@PathVariable("id") UUID userId, @RequestBody ChangePasswordDTO changePasswordDTO) {
+        iUserService.changeUserPassword(userId, changePasswordDTO);
     }
 
     @PatchMapping("change-user-state/{id}")

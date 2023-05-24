@@ -17,6 +17,8 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
+import static me.project.auth.enums.AppUserRole.*;
+
 @Configuration
 @EnableEncryptableProperties
 @AllArgsConstructor

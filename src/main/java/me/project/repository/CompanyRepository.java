@@ -7,4 +7,8 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import java.util.UUID;
 
 public interface CompanyRepository extends JpaRepository<Company, UUID>, JpaSpecificationExecutor<Company> {
+
+    boolean existsByCompanyNameAndTaxNumber(String companyName, String taxNumber);
+
+    Company getCompanyByCompanyNameAndTaxNumber(String companyName, String taxNumber);
 }

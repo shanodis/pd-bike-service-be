@@ -1,10 +1,15 @@
 package me.project.auth;
 
+import me.project.auth.enums.AppUserRole;
+import me.project.dtos.request.company.CompanyCreateDTO;
+import me.project.dtos.request.company.CompanyUpdateDTO;
 import me.project.email.EmailService;
 import me.project.email.EmailTemplates;
-import me.project.dtos.request.ChangePasswordDTO;
-import me.project.dtos.request.UserCreateDTO;
-import me.project.dtos.request.UserUpdateDTO;
+import me.project.dtos.request.user.ChangePasswordDTO;
+import me.project.dtos.request.user.UserCreateDTO;
+import me.project.dtos.request.user.UserUpdateDTO;
+import me.project.entitiy.Company;
+import me.project.service.company.ICompanyService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -24,6 +29,7 @@ public class UserService implements IUserService {
 
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final UserRepository userRepository;
+    private final ICompanyService companyService;
 
     private final EmailService emailService;
     private final EmailTemplates emailTemplates;
@@ -31,26 +37,38 @@ public class UserService implements IUserService {
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         return userRepository.findByEmail(email).orElseThrow(
-                () -> new UsernameNotFoundException(String.format(USER_NOT_FOUND, email))
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, String.format(USER_NOT_FOUND, email))
         );
     }
 
-    public User createAppUser(UserCreateDTO userCredentials) {
-        if (userRepository.existsByEmail(userCredentials.getEmail())) {
-            throw new IllegalStateException("This email is already taken!");
-        }
+    @Transactional
+    public User createAppUser(UserCreateDTO createDTO) {
+        if (userRepository.existsByEmail(createDTO.getEmail()))
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "This email is already taken!");
 
-        userCredentials.setPassword(bCryptPasswordEncoder.encode(userCredentials.getPassword()));
+        String passwordBeforeEncoding = createDTO.getPassword();
 
-        User user = new User(userCredentials, false, true);
+        createDTO.setPassword(bCryptPasswordEncoder.encode(createDTO.getPassword()));
+        User user = new User(createDTO, false, true);
+
+        userRepository.save(user);
 
         //create address
 
-        //if(!userCredentials.getIsEmployee())
-            //create company
+        if(createDTO.getAppUserRole().equals(AppUserRole.CLIENT)) {
+            Company company = companyService.createCompanyIfNotExists(new CompanyCreateDTO(
+                    createDTO.getCompanyName().trim(),
+                    createDTO.getTaxNumber().trim())
+            );
+            //TODO finish create user/ create UserCompany
+        }
 
-        //TODO finish create user
-        userRepository.save(user);
+//        emailService.send(
+//                user.getEmail(),
+//                emailTemplates.emailTemplateForWelcome(user.getEmail(), passwordBeforeEncoding),
+//                "Welcome!"
+//        );
+
         return user;
     }
 
@@ -69,30 +87,30 @@ public class UserService implements IUserService {
     }
 
     @Transactional
-    public void updateAppUser(UUID id, UserUpdateDTO userCredentials) {
+    public void updateAppUser(UUID id, UserUpdateDTO updateDTO) {
         User user = userRepository.findById(id).orElseThrow(
-                () -> new UsernameNotFoundException(String.format(USER_NOT_FOUND, userCredentials.getEmail()))
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, String.format(USER_NOT_FOUND, updateDTO.getEmail()))
         );
 
-        if (!user.getEmail().equals(userCredentials.getEmail()))
-            if (userRepository.existsByEmail(userCredentials.getEmail())) {
-                throw new IllegalStateException("This email is already taken!");
-            }
+        if (!user.getEmail().equals(updateDTO.getEmail()))
+            if (userRepository.existsByEmail(updateDTO.getEmail()))
+                throw new ResponseStatusException(HttpStatus.CONFLICT, "This email is already taken!");
 
-
-        user = userCredentials.overrideToUser(user);
+        user = updateDTO.convertToUser(user);
         //update address
 
-        //if(!userCredentials.getIsEmployee())
-            //update company
+        if(user.getAppUserRole().equals(AppUserRole.CLIENT))
+           companyService.updateCompany(
+                   updateDTO.getCompanyId(),
+                   new CompanyUpdateDTO(updateDTO.getCompanyName().trim(), updateDTO.getTaxNumber().trim())
+           );
 
-        //TODO finish Update
         userRepository.save(user);
     }
 
-    public void changeUserPassword(ChangePasswordDTO changePasswordDTO){
-        User user = userRepository.findById(changePasswordDTO.getUserId()).orElseThrow(
-                () -> new UsernameNotFoundException("User with given id " + changePasswordDTO.getUserId() + " doesn't exist in database!")
+    public void changeUserPassword(UUID userId, ChangePasswordDTO changePasswordDTO){
+        User user = userRepository.findById(userId).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User with given id " + userId + " doesn't exist in database!")
         );
 
         String oldPassword = bCryptPasswordEncoder.encode(changePasswordDTO.getOldPassword());
@@ -101,7 +119,7 @@ public class UserService implements IUserService {
             throw new ResponseStatusException(HttpStatus.CONFLICT,"Password provided doesn't match actual password, Request Denied");
 
         if(!changePasswordDTO.getNewPassword().equals(changePasswordDTO.getNewPasswordConfirm()))
-            throw new IllegalStateException("New password and password confirmation doesn't match");
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "New password and password confirmation doesn't match");
 
         user.setPassword(bCryptPasswordEncoder.encode(changePasswordDTO.getNewPassword()));
 
@@ -117,7 +135,7 @@ public class UserService implements IUserService {
 
     public User getUserByEmail(String email) {
         return userRepository.findByEmail(email).orElseThrow(
-                ()->new ResponseStatusException(HttpStatus.NOT_FOUND, "User with given email " + email + " doesn't exist in database!")
+                ()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "User with given email " + email + " doesn't exist in database!")
         );
     }
 

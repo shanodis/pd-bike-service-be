@@ -1,6 +1,9 @@
 package me.project.dtos.request.user;
 
-import me.project.entitiy.User;
+import me.project.auth.User;
+import me.project.auth.enums.AppUserRole;
+import me.project.entitiy.Address;
+import me.project.entitiy.Company;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -31,12 +34,11 @@ public class UserUpdateDTO implements Serializable {
 
     private String Note;
 
+    private UUID CompanyId;
+
     private String CompanyName;
 
     private String TaxNumber;
-
-    @NotNull
-    private UUID CountryId;
 
     private String StreetName;
 

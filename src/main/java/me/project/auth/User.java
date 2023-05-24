@@ -6,7 +6,7 @@ import me.project.entitiy.Bike;
 import me.project.entitiy.File;
 import me.project.entitiy.Order;
 import me.project.entitiy.UserCompany;
-import me.project.dtos.request.UserCreateDTO;
+import me.project.dtos.request.user.UserCreateDTO;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.EqualsAndHashCode;
@@ -80,16 +80,16 @@ public class User implements UserDetails {
     public User(UserCreateDTO userCredentials,
                 Boolean locked,
                 Boolean enabled) {
-        this.password = userCredentials.getPassword();
-        this.email = userCredentials.getEmail();
+        this.password = userCredentials.getPassword().trim();
+        this.email = userCredentials.getEmail().trim();
         this.appUserRole = userCredentials.getAppUserRole();
-        this.note = userCredentials.getNote();
-        this.firstName = userCredentials.getFirstName();
-        this.lastName = userCredentials.getLastName();
-        this.phoneNumberPrefix = userCredentials.getPhoneNumberPrefix();
-        this.phoneNumber = userCredentials.getPhoneNumber();
+        this.note = userCredentials.getNote().trim();
+        this.firstName = userCredentials.getFirstName().trim();
+        this.lastName = userCredentials.getLastName().trim();
+        this.phoneNumberPrefix = userCredentials.getPhoneNumberPrefix().trim();
+        this.phoneNumber = userCredentials.getPhoneNumber().trim();
         this.isPasswordChangeRequired = true;
-        this.password = userCredentials.getPassword();
+        this.password = userCredentials.getPassword().trim();
         this.locked = locked;
         this.enabled = enabled;
     }
