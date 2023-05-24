@@ -1,6 +1,6 @@
 package me.project.config;
 
-import me.project.service.user.UserService;
+import me.project.auth.UserService;
 import me.project.auth.formLogin.FormLoginUsernameAndPasswordAuthenticationFilter;
 import me.project.auth.jwt.JwtTokenVerifier;
 import com.ulisesbocchio.jasyptspringboot.annotation.EnableEncryptableProperties;

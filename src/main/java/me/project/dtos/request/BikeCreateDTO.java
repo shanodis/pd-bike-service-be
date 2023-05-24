@@ -1,6 +1,6 @@
 package me.project.dtos.request;
 
-import me.project.entitiy.User;
+import me.project.auth.User;
 import me.project.entitiy.Bike;
 import lombok.AllArgsConstructor;
 import lombok.Data;

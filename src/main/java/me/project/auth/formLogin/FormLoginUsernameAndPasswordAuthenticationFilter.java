@@ -1,6 +1,6 @@
 package me.project.auth.formLogin;
 
-import me.project.service.user.UserService;
+import me.project.auth.UserService;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import lombok.AllArgsConstructor;

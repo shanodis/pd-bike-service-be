@@ -1,41 +1,41 @@
 package me.project.dtos.request;
 
-import me.project.auth.enums.AppUserRole;
-import me.project.entitiy.Address;
-import me.project.entitiy.Company;
+import me.project.auth.User;
 import lombok.Data;
-import me.project.entitiy.User;
-
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.UUID;
 
 @Data
 public class UserUpdateDTO implements Serializable {
-    private final UUID UserId;
-
+    @NotNull
     private final String Email;
 
+    @NotNull
     private final String FirstName;
 
+    @NotNull
     private final String LastName;
 
+    @NotNull
     private final String PhoneNumberPrefix;
 
+    @NotNull
     private final String PhoneNumber;
-
-    private final String Tags;
 
     private final String Note;
 
-    @NotNull
-    private final AppUserRole appUserRole;
+    private final UUID CompanyId;
 
-    private final Company Company;
+    private final String CompanyName;
 
-    private final Address Address;
+    private final String StreetName;
 
-    public User overrideToUser(User oldUser){
+    private final String PostCode;
+
+    private final String City;
+
+    public User overrideToUser(User oldUser) {
         if (!getEmail().isEmpty())
             oldUser.setEmail(getEmail());
 

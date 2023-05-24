@@ -1,7 +1,9 @@
 package me.project.dtos.request;
 
 import me.project.auth.enums.AppUserRole;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.lang.Nullable;
 
 import javax.validation.constraints.NotNull;
@@ -9,40 +11,41 @@ import java.io.Serializable;
 import java.util.UUID;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class UserCreateDTO implements Serializable {
-    private final Boolean isEmployee;
 
-    private final String Email;
+    private String Email;
 
     private String Password;
 
-    private final String FirstName;
+    private String FirstName;
 
-    private final String LastName;
+    private String LastName;
 
-    private final String PhoneNumberPrefix;
+    private String PhoneNumberPrefix;
 
-    private final String PhoneNumber;
+    private String PhoneNumber;
 
-    private final String Tags;
+    private String Tags;
 
-    private final String Note;
+    private String Note;
 
     @NotNull
-    private final AppUserRole appUserRole;
+    private AppUserRole appUserRole;
 
-    private final String CompanyName;
+    private String CompanyName;
 
-    private final String TaxNumber;
+    private String TaxNumber;
 
-    private final String StreetName;
+    private String StreetName;
 
-    private final String PostCode;
+    private String PostCode;
 
-    private final String City;
+    private String City;
 
     @Nullable
-    private final UUID CountryId;
+    private UUID CountryId;
 
     public void setPassword(String newPassword) {
         this.Password = newPassword;
