@@ -25,18 +25,18 @@ public class CountryController {
         return countryService.getAllCountries();
     }
 
-    @GetMapping("countries")
+    @GetMapping("without-addresses")
     public List<CountryWithoutAddressesDTO> getAllCountriesWithoutAddresses() {
         return countryService.getAllCountriesWithoutAddresses();
     }
 
-    @PostMapping
-    public CountryWithoutAddressesDTO createCountryIfNotExists(@RequestBody String CountryName) {
+    @PostMapping("{CountryName}")
+    public CountryWithoutAddressesDTO createCountryIfNotExists(@PathVariable String CountryName) {
         return countryService.createCountryIfNotExists(CountryName);
     }
 
-    @PutMapping("{CountryId}")
-    public void updateCountry(@PathVariable UUID CountryId,@RequestBody String NewCountryName) {
+    @PutMapping("{CountryId}&{NewCountryName}")
+    public void updateCountry(@PathVariable UUID CountryId,@PathVariable String NewCountryName) {
         countryService.updateCountry(CountryId, NewCountryName);
     }
 

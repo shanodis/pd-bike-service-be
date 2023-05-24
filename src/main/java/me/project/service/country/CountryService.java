@@ -1,19 +1,13 @@
 package me.project.service.country;
 
-import me.project.auth.enums.AppUserRole;
-import me.project.dtos.request.PageRequestDTO;
 import me.project.dtos.response.country.CountryWithoutAddressesDTO;
-import me.project.dtos.response.page.PageResponse;
-import me.project.dtos.response.user.SimpleCustomerDTO;
 import me.project.entitiy.Country;
-import me.project.entitiy.User;
 import me.project.repository.CountryRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -47,13 +41,6 @@ public class CountryService implements ICountryService {
         return countries;
     }
 
-    public PageResponse<CountryWithoutAddressesDTO> getAllCountries(PageRequestDTO requestDTO) {
-        return new PageResponse<>(
-                countryRepository.findAll(requestDTO.getRequest(Country.class))
-                        .map(CountryWithoutAddressesDTO::convertFromCountry)
-        );
-    }
-
     public CountryWithoutAddressesDTO createCountryIfNotExists(String CountryName) {
 
         Country country = new Country(CountryName);
@@ -66,7 +53,6 @@ public class CountryService implements ICountryService {
         return CountryWithoutAddressesDTO.convertFromCountry(country);
     }
 
-    @Transactional
     public void updateCountry(UUID CountryId, String NewCountryName) {
 
         Country country = countryRepository.findById(CountryId).orElseThrow(

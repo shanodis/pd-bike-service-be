@@ -1,9 +1,7 @@
 package me.project.service.country;
 
 
-import me.project.dtos.request.PageRequestDTO;
 import me.project.dtos.response.country.CountryWithoutAddressesDTO;
-import me.project.dtos.response.page.PageResponse;
 import me.project.entitiy.Country;
 
 import java.util.List;
@@ -16,8 +14,6 @@ public interface ICountryService {
     List<Country> getAllCountries();
 
     List<CountryWithoutAddressesDTO> getAllCountriesWithoutAddresses();
-
-    PageResponse<CountryWithoutAddressesDTO> getAllCountries(PageRequestDTO requestDTO);
 
     CountryWithoutAddressesDTO createCountryIfNotExists(String CountryName);
 
