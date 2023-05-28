@@ -1,10 +1,13 @@
 package me.project.auth.formLogin;
 
-import me.project.service.user.UserService;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import me.project.auth.CustomWebAuthenticationDetails;
+import me.project.entitiy.User;
+import me.project.service.auth.TotpService;
+import me.project.service.user.UserService;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -29,7 +32,9 @@ import static me.project.enums.JwtExpire.REFRESH_TOKEN;
 public class FormLoginUsernameAndPasswordAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
     private final AuthenticationManager authenticationManager;
     private final UserService userService;
+    private TotpService totpService;
     private final boolean postOnly = true;
+
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
@@ -43,10 +48,21 @@ public class FormLoginUsernameAndPasswordAuthenticationFilter extends UsernamePa
         String password = this.obtainPassword(request);
         password = password != null ? password : "";
 
+
         UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(username, password);
         this.setDetails(request, authRequest);
-        return this.getAuthenticationManager().authenticate(authRequest);
 
+        Authentication authentication = this.getAuthenticationManager().authenticate(authRequest);
+        User user = userService.findUserByEmail(username);
+
+        if (user != null && user.isUsing2FA()) {
+            String totp = ((CustomWebAuthenticationDetails) authRequest.getDetails()).getVerificationCode();
+            if (!totpService.verifyCode(user.getSecret2FA(), Integer.parseInt(totp))) {
+                throw new AuthenticationServiceException("Invalid 2FA code: " + request.getMethod());
+            }
+        }
+
+        return authentication;
     }
 
     @Override

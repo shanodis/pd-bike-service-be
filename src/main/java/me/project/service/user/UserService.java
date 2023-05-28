@@ -239,6 +239,8 @@ public class UserService implements IUserService {
         if (userRepository.existsByEmail(customerRegisterDTO.getEmail()))
             throw new ResponseStatusException(HttpStatus.CONFLICT, "This email is already taken!");
 
+        customerRegisterDTO.setNote("");
+
         User user = new User(customerRegisterDTO, true, false, AppUserRole.CLIENT);
 
         userRepository.save(user);

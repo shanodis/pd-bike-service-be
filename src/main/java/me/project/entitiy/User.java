@@ -1,16 +1,15 @@
 package me.project.entitiy;
 
-import me.project.auth.enums.AppUserRole;
-import me.project.auth.enums.AuthProvider;
-import me.project.dtos.request.user.ClientCreateDTO;
-import me.project.dtos.request.user.CustomerRegisterDTO;
-import me.project.dtos.request.user.UserCreateDTO;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
+import me.project.auth.enums.AppUserRole;
+import me.project.dtos.request.user.ClientCreateDTO;
+import me.project.dtos.request.user.CustomerRegisterDTO;
+import me.project.dtos.request.user.UserCreateDTO;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -53,6 +52,13 @@ public class User implements UserDetails {
     private String password;
     private Boolean isPasswordChangeRequired;
 
+    //OAuth2 fields
+    private String provider;
+    private String providerId;
+    //2FA fields
+    private boolean isUsing2FA;
+    private String secret2FA;
+
     @OneToMany(mappedBy = "user",fetch = FetchType.LAZY)
     @JsonManagedReference
     private List<Bike> bikes;
@@ -72,11 +78,6 @@ public class User implements UserDetails {
     @NotNull
     @Enumerated(EnumType.STRING)
     private AppUserRole appUserRole;
-
-    @Enumerated(EnumType.STRING)
-    private AuthProvider provider;
-
-    private String providerId;
 
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
     private LocalDateTime createdOn;

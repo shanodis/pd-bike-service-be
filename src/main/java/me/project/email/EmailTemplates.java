@@ -110,8 +110,7 @@ public class EmailTemplates {
                 "                                                <div style=\"font-family: sans-serif\">\n" +
                 "                                                    <div style=\"font-size: 12px; mso-line-height-alt: 18px; color: #f7f7f7; line-height: 1.5; font-family: Varela Round, Trebuchet MS, Helvetica, sans-serif;\">\n" +
                 "                                                        <p style=\"margin: 0; font-size: 14px; text-align: center;\"><span style=\"font-size:26px;\">To activate your account you have to set up a password</span></p>\n" +
-                "                                                        <p style=\"margin: 0; font-size: 14px; text-align: center; mso-line-height-alt: 21px;\"><span style=\"font-size:14px;\">Activate account link:<a href=https://bike-service-fe.herokuapp.com/set-password?userId=" + user.getUserId() + ">Click Here</a></span></p>\n" +
-                "                                                        <p style=\"margin: 0; font-size: 14px; text-align: center; mso-line-height-alt: 21px;\"><span style=\"font-size:14px;\">Secondary link:<a href=http://localhost:3000/set-password?userId=" + user.getUserId() + ">Click Here</a></span></p>\n" +
+                "                                                        <p style=\"margin: 0; font-size: 14px; text-align: center; mso-line-height-alt: 21px;\"><span style=\"font-size:14px;\">Activate account link:<a href=http://localhost:3000/set-password?userId=" + user.getUserId() + ">Click Here</a></span></p>\n" +
                 "                                                    </div>\n" +
                 "                                                </div>\n" +
                 "                                            </td>\n" +
@@ -392,19 +391,6 @@ public class EmailTemplates {
                 "                                                        </tr>\n" +
                 "                                                    </table>\n" +
                 "                                                </div>\n" +
-                "                                            </td>\n" +
-                "                                        </tr>\n" +
-                "                                    </table>\n" +
-                "                                    <table border=\"0\" cellpadding=\"10\" cellspacing=\"0\" class=\"social_block\" role=\"presentation\" style=\"mso-table-lspace: 0pt; mso-table-rspace: 0pt;\" width=\"100%\">\n" +
-                "                                        <tr>\n" +
-                "                                            <td>\n" +
-                "                                                <table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"social-table\" role=\"presentation\" style=\"mso-table-lspace: 0pt; mso-table-rspace: 0pt;\" width=\"156px\">\n" +
-                "                                                    <tr>\n" +
-                "                                                        <td style=\"padding:0 10px 0 10px;\"><a href=\"https://facebook.com\" target=\"_blank\"><img alt=\"Facebook\" height=\"32\" src=\"https://drive.google.com/file/d/1BR2NJjQeogyG3y-z3QBicbcHwffM2ROl/view\" style=\"display: block; height: auto; border: 0;\" title=\"Facebook\" width=\"32\"/></a></td>\n" +
-                "                                                        <td style=\"padding:0 10px 0 10px;\"><a href=\"https://instagram.com\" target=\"_blank\"><img alt=\"Instagram\" height=\"32\" src=\"https://drive.google.com/file/d/1FLDG9443zU_U0rQrojDtlTgdN0mBAyxk/view?usp=sharing\" style=\"display: block; height: auto; border: 0;\" title=\"Instagram\" width=\"32\"/></a></td>\n" +
-                "                                                        <td style=\"padding:0 10px 0 10px;\"><a href=\"https://twitter.com\" target=\"_blank\"><img alt=\"Twitter\" height=\"32\" src=\"https://drive.google.com/file/d/1DVNgzK0buZt8GIFKx7WlfwRkKdzu3xjU/view?usp=sharing\" style=\"display: block; height: auto; border: 0;\" title=\"Twitter\" width=\"32\"/></a></td>\n" +
-                "                                                    </tr>\n" +
-                "                                                </table>\n" +
                 "                                            </td>\n" +
                 "                                        </tr>\n" +
                 "                                    </table>\n" +

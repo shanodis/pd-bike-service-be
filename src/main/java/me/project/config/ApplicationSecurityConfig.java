@@ -1,13 +1,11 @@
 package me.project.config;
 
-import me.project.auth.oauth2.CustomOAuth2UserService;
-import me.project.auth.oauth2.OAuth2FailureHandler;
-import me.project.auth.oauth2.Oauth2SuccessLoginHandler;
-import me.project.service.user.UserService;
-import me.project.auth.formLogin.FormLoginUsernameAndPasswordAuthenticationFilter;
-import me.project.auth.jwt.JwtTokenFilter;
 import com.ulisesbocchio.jasyptspringboot.annotation.EnableEncryptableProperties;
 import lombok.AllArgsConstructor;
+import me.project.auth.formLogin.FormLoginUsernameAndPasswordAuthenticationFilter;
+import me.project.auth.jwt.JwtTokenFilter;
+import me.project.service.auth.TotpService;
+import me.project.service.user.UserService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -29,7 +27,7 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 public class ApplicationSecurityConfig extends WebSecurityConfigurerAdapter {
     private final UserService userService;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
-    private final CustomOAuth2UserService oAuth2UserService;
+    private TotpService totpService;
 
 
     @Override
@@ -41,20 +39,12 @@ public class ApplicationSecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .httpBasic()
                 .and()
-                .oauth2Login()
-                .userInfoEndpoint()
-                .userService(oAuth2UserService)
-                .and()
-                .failureHandler(new OAuth2FailureHandler())
-                .successHandler(new Oauth2SuccessLoginHandler(userService))
-                .and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
-                .addFilter(new FormLoginUsernameAndPasswordAuthenticationFilter(authenticationManager(), userService))
+                .addFilter(new FormLoginUsernameAndPasswordAuthenticationFilter(authenticationManager(), userService, totpService))
                 .addFilterAfter(new JwtTokenFilter(), FormLoginUsernameAndPasswordAuthenticationFilter.class)
                 .authorizeRequests()
                 .antMatchers("/index", "/css/*", "/js/*", "/swagger-ui.html").permitAll()
-
         ;
     }
 
@@ -70,5 +60,4 @@ public class ApplicationSecurityConfig extends WebSecurityConfigurerAdapter {
         provider.setUserDetailsService(userService);
         return provider;
     }
-
 }

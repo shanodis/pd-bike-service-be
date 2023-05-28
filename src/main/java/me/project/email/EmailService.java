@@ -31,7 +31,7 @@ public class EmailService {
             helper.setText(email, true);
             helper.setTo(to);
             helper.setSubject(subject);
-            helper.setFrom("bike-no-reply@op.pl");
+            //helper.setFrom("bike-no-reply@op.pl");
             mailSender.send(mimeMessage);
         } catch (Exception e) {
             LOGGER.error("failed to send email", e);
