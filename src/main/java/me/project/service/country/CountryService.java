@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -53,6 +54,7 @@ public class CountryService implements ICountryService {
         return CountryWithoutAddressesDTO.convertFromCountry(country);
     }
 
+    @Transactional
     public void updateCountry(UUID CountryId, String NewCountryName) {
 
         Country country = countryRepository.findById(CountryId).orElseThrow(

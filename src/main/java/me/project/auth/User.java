@@ -2,10 +2,7 @@ package me.project.auth;
 
 import me.project.auth.enums.AppUserRole;
 import me.project.auth.enums.AuthProvider;
-import me.project.entitiy.Bike;
-import me.project.entitiy.File;
-import me.project.entitiy.Order;
-import me.project.entitiy.UserCompany;
+import me.project.entitiy.*;
 import me.project.dtos.request.user.UserCreateDTO;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
@@ -18,6 +15,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.time.LocalDate;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -61,9 +59,13 @@ public class User implements UserDetails {
     @JsonManagedReference
     private List<Order> orders;
 
-    @OneToMany(mappedBy = "user",fetch = FetchType.LAZY)
-    @JsonManagedReference
-    private List<UserCompany> userCompanies;
+    @OneToOne
+    @JoinColumn(name = "company_id")
+    private Company company;
+
+    @OneToOne
+    @JoinColumn(name = "address_id")
+    private Address address;
 
     @NotNull
     @Enumerated(EnumType.STRING)
@@ -73,6 +75,8 @@ public class User implements UserDetails {
     private AuthProvider provider;
 
     private String providerId;
+
+    private LocalDate createdOn;
 
     private Boolean locked;
     private Boolean enabled;
@@ -92,6 +96,7 @@ public class User implements UserDetails {
         this.password = userCredentials.getPassword().trim();
         this.locked = locked;
         this.enabled = enabled;
+        this.createdOn = LocalDate.now();
     }
 
     public User() {

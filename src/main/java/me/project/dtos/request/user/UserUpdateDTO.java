@@ -34,11 +34,12 @@ public class UserUpdateDTO implements Serializable {
 
     private String Note;
 
-    private UUID CompanyId;
-
     private String CompanyName;
 
     private String TaxNumber;
+
+    @NotNull
+    private UUID CountryId;
 
     private String StreetName;
 

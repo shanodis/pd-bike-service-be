@@ -1,6 +1,6 @@
 package me.project.dtos.response.user;
 
-import me.project.entitiy.User;
+import me.project.auth.User;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -10,13 +10,14 @@ import java.util.UUID;
 
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class SimpleEmployeeDTO implements Serializable {
-    private final UUID userId;
-    private final String email;
-    private final String firstName;
-    private final String lastName;
-    private final String phoneNumberPrefix;
-    private final String phoneNumber;
+    private UUID userId;
+    private String email;
+    private String firstName;
+    private String lastName;
+    private String phoneNumberPrefix;
+    private String phoneNumber;
 
     public static SimpleEmployeeDTO convertFromEntity(User user) {
         return new SimpleEmployeeDTO(

@@ -13,7 +13,9 @@ import java.util.UUID;
 @AllArgsConstructor
 public class CompanyUpdateDTO implements Serializable {
 
+    @NotNull
     private String companyName;
 
+    @NotNull
     private String taxNumber;
 }

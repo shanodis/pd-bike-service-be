@@ -1,8 +1,12 @@
 package me.project.auth;
 
+import me.project.dtos.request.PageRequestDTO;
 import me.project.dtos.request.user.ChangePasswordDTO;
 import me.project.dtos.request.user.UserCreateDTO;
 import me.project.dtos.request.user.UserUpdateDTO;
+import me.project.dtos.response.page.PageResponse;
+import me.project.dtos.response.user.SimpleCustomerDTO;
+import me.project.dtos.response.user.SimpleEmployeeDTO;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,6 +27,27 @@ public class UserController {
     @GetMapping("{id}")
     public User getUser(@PathVariable UUID id) {
         return iUserService.getUser(id);
+    }
+
+    @GetMapping("page/{pageNumber}/{pageSize}/{sortDir}/{sortBy}")
+    public PageResponse<User> getUsers(@PathVariable Integer pageNumber, @PathVariable Integer pageSize,
+                                       @PathVariable String sortDir, @PathVariable String sortBy)
+    {
+        return iUserService.getUsers(new PageRequestDTO(pageNumber, pageSize, sortDir, sortBy));
+    }
+
+    @GetMapping("customers/page/{pageNumber}/{pageSize}/{sortDir}/{sortBy}")
+    public PageResponse<SimpleCustomerDTO> getSimpleCustomers(@PathVariable Integer pageNumber, @PathVariable Integer pageSize,
+                                            @PathVariable String sortDir, @PathVariable String sortBy)
+    {
+        return iUserService.getSimpleCustomers(new PageRequestDTO(pageNumber, pageSize, sortDir, sortBy));
+    }
+
+    @GetMapping("employees/page/{pageNumber}/{pageSize}/{sortDir}/{sortBy}")
+    public PageResponse<SimpleEmployeeDTO> getSimpleEmployees(@PathVariable Integer pageNumber, @PathVariable Integer pageSize,
+                                                      @PathVariable String sortDir, @PathVariable String sortBy)
+    {
+        return iUserService.getSimpleEmployees(new PageRequestDTO(pageNumber, pageSize, sortDir, sortBy));
     }
 
     @PostMapping

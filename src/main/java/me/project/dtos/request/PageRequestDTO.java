@@ -1,5 +1,6 @@
 package me.project.dtos.request;
 
+import me.project.dtos.response.user.SimpleEmployeeDTO;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -9,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.constraints.NotNull;
+import java.lang.reflect.Field;
 import java.util.Arrays;
 
 @Data
