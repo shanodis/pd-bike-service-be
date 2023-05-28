@@ -35,4 +35,12 @@ public class BikeFile {
     @JoinColumn(name = "file_id")
     @JsonBackReference
     private File file;
+
+    private Integer orderNumber;
+
+    public BikeFile(Bike bike, File file, Integer orderNumber) {
+        this.bike = bike;
+        this.file = file;
+        this.orderNumber= orderNumber;
+    }
 }

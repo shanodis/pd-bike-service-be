@@ -24,6 +24,7 @@ public class OrderInvoiceDTO implements Serializable {
     private final String orderStatusName;
     private final LocalDateTime createdOn;
     private final BigDecimal totalPrice;
+    private final Boolean isPaid;
 
     public static OrderInvoiceDTO convertFromEntity(Order order) {
 
@@ -59,7 +60,9 @@ public class OrderInvoiceDTO implements Serializable {
 
                 order.getCreatedOn(),
 
-                totalPrice[0]
+                totalPrice[0],
+
+                order.getIsPayed()
         );
     }
 }

@@ -10,6 +10,7 @@ import java.util.UUID;
 
 @Data
 @AllArgsConstructor
+
 public class ServiceDTO implements Serializable {
     private final UUID serviceId;
     private final String serviceName;

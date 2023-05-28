@@ -12,6 +12,7 @@ import me.project.service.files.IFileService;
 import me.project.service.user.IUserService;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.UUID;
@@ -40,11 +41,11 @@ public class UserController {
 
     @GetMapping("{userId}/avatar")
     public String getUserAvatar(@PathVariable UUID userId) {
-        return fileService.getFileUrl(userService.getUser(userId).getAvatar().getFileId());
+        return userService.getUserAvatar(userId);
     }
 
     @GetMapping("{userId}/bikes")
-    public List<SimpleBikeDTO> getUserBikes(@PathVariable UUID userId, @RequestParam(required = false,defaultValue = "") String phrase) {
+    public List<SimpleBikeDTO> getUserBikes(@PathVariable UUID userId, @RequestParam(required = false, defaultValue = "") String phrase) {
         return bikeService.getBikesByUserAndPhrase(userId, phrase);
     }
 
@@ -55,20 +56,23 @@ public class UserController {
 
     @GetMapping("page")
     public PageResponse<SimpleUserDTO> getUsers(@RequestParam Integer page, @RequestParam Integer pageLimit,
-                                                @RequestParam String sortDir, @RequestParam String sortBy) {
+                                                @RequestParam(required = false, defaultValue = "asc") String sortDir,
+                                                @RequestParam(required = false, defaultValue = "firstName") String sortBy) {
         return userService.getUsers(new PageRequestDTO(page, pageLimit, sortDir, sortBy));
     }
 
     @GetMapping("customers/page")
     public PageResponse<SimpleCustomerDTO> getSimpleCustomers(@RequestParam Integer page, @RequestParam Integer pageLimit,
-                                                              @RequestParam String sortDir, @RequestParam String sortBy,
+                                                              @RequestParam(required = false, defaultValue = "asc") String sortDir,
+                                                              @RequestParam(required = false, defaultValue = "firstName") String sortBy,
                                                               @RequestParam(required = false) String phrase) {
         return userService.getSimpleCustomers(new PageRequestDTO(page, pageLimit, sortDir, sortBy), phrase);
     }
 
     @GetMapping("employees/page")
     public PageResponse<SimpleEmployeeDTO> getSimpleEmployees(@RequestParam Integer page, @RequestParam Integer pageLimit,
-                                                              @RequestParam String sortDir, @RequestParam String sortBy) {
+                                                              @RequestParam(required = false, defaultValue = "asc") String sortDir,
+                                                              @RequestParam(required = false, defaultValue = "firstName") String sortBy) {
         return userService.getSimpleEmployees(new PageRequestDTO(page, pageLimit, sortDir, sortBy));
     }
 
@@ -82,13 +86,28 @@ public class UserController {
         return userService.createCustomer(clientCreateDTO);
     }
 
+    @PostMapping(value = "{userId}/avatar", consumes = {"multipart/form-data"})
+    public void uploadUserAvatar(@PathVariable UUID userId, @RequestParam("file") MultipartFile file) {
+        userService.uploadUserAvatar(userId, file);
+    }
+
     @PutMapping("{userId}")
     public void updateAppUser(@PathVariable UUID userId, @RequestBody UserUpdateDTO userCredentials) {
         userService.updateAppUser(userId, userCredentials);
     }
 
+    @PutMapping(value = "{userId}/avatar", consumes = {"multipart/form-data"})
+    public void updateUserAvatar(@PathVariable UUID userId, @RequestParam("file") MultipartFile file) {
+        userService.updateUserAvatar(userId, file);
+    }
+
     @DeleteMapping("{userId}")
     public void deleteUserById(@PathVariable UUID userId) {
         userService.deleteUserById(userId);
+    }
+
+    @DeleteMapping("{userId}/avatar")
+    public void deleteUserAvatar(@PathVariable UUID userId) {
+        userService.deleteUserAvatar(userId);
     }
 }

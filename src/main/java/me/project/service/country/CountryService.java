@@ -1,12 +1,9 @@
 package me.project.service.country;
 
-import me.project.auth.enums.AppUserRole;
 import me.project.dtos.request.PageRequestDTO;
 import me.project.dtos.response.country.CountryWithoutAddressesDTO;
 import me.project.dtos.response.page.PageResponse;
-import me.project.dtos.response.user.SimpleCustomerDTO;
 import me.project.entitiy.Country;
-import me.project.entitiy.User;
 import me.project.repository.CountryRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;

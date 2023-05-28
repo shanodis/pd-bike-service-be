@@ -28,6 +28,8 @@ public class OrderPaginationResponseDTO implements Serializable {
 
     private final List<String> servicesNames;
 
+    private final String orderStatusName;
+
     public static OrderPaginationResponseDTO convertFromEntity(Order order) {
         return new OrderPaginationResponseDTO(
                 order.getOrderId(),
@@ -38,7 +40,8 @@ public class OrderPaginationResponseDTO implements Serializable {
                 order.getOrderServices()
                         .stream()
                         .map(orderService -> orderService.getService().getServiceName())
-                        .collect(Collectors.toList())
+                        .collect(Collectors.toList()),
+                order.getOrderStatus().getOrderStatusName()
         );
     }
 }

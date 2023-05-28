@@ -4,7 +4,10 @@ import me.project.dtos.request.PageRequestDTO;
 import me.project.dtos.request.service.CreateServiceDTO;
 import me.project.dtos.response.page.PageResponse;
 import me.project.dtos.response.services.ServiceDTO;
+import me.project.enums.SearchOperation;
 import me.project.repository.ServiceRepository;
+import me.project.search.SearchCriteria;
+import me.project.search.specificator.Specifications;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -28,7 +31,20 @@ public class ServiceService implements IServiceService {
         return ServiceDTO.convertFromEntity(findServiceById(serviceId));
     }
 
-    public PageResponse<ServiceDTO> getAllServicesDictionary(PageRequestDTO pageRequestDTO) {
+    public PageResponse<ServiceDTO> getAllServicesDictionary(PageRequestDTO pageRequestDTO, String phrase) {
+
+        Specifications<me.project.entitiy.Service> serviceSpecifications;
+
+        if (phrase != null) {
+            serviceSpecifications = new Specifications<me.project.entitiy.Service>()
+                    .or(new SearchCriteria("serviceName", phrase, SearchOperation.MATCH));
+
+            return new PageResponse<>(
+                    serviceRepository.findAll(serviceSpecifications, pageRequestDTO.getRequest(me.project.entitiy.Service.class))
+                            .map(ServiceDTO::convertFromEntity)
+            );
+        }
+
         return new PageResponse<>(
                 serviceRepository.findAll(pageRequestDTO.getRequest(me.project.entitiy.Service.class))
                         .map(ServiceDTO::convertFromEntity)

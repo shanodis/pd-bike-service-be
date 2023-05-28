@@ -10,7 +10,7 @@ import java.util.UUID;
 public interface IServiceService {
     ServiceDTO getServiceById(UUID serviceId);
 
-    PageResponse<ServiceDTO> getAllServicesDictionary(PageRequestDTO pageRequestDTO);
+    PageResponse<ServiceDTO> getAllServicesDictionary(PageRequestDTO pageRequestDTO, String phrase);
 
     PageResponse<ServiceDTO> getAllServices(PageRequestDTO pageRequestDTO, String phrase);
 

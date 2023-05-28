@@ -14,7 +14,7 @@
 	<artifactId>OBS</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>com.bikend</name>
-	<description>Backend app for Online Bank System</description>
+	<description>Backend app for Bike Service</description>
 
 	<properties>
 		<java.version>17</java.version>
@@ -63,6 +63,12 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-starter-json</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 
 		<dependency>
@@ -153,6 +159,16 @@
 			<artifactId>aws-java-sdk</artifactId>
 			<version>1.11.163</version>
 		</dependency>
+		<dependency>
+			<groupId>com.stripe</groupId>
+			<artifactId>stripe-java</artifactId>
+			<version>20.123.0</version>
+		</dependency>
+		<dependency>
+			<groupId>com.google.code.gson</groupId>
+			<artifactId>gson</artifactId>
+		</dependency>
+
 	</dependencies>
 
 	<build>

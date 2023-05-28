@@ -3,13 +3,11 @@ package me.project.search.specificator;
 import me.project.search.SearchCriteria;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.lang.NonNull;
-import org.springframework.lang.NonNullApi;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 

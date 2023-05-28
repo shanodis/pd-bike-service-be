@@ -15,6 +15,7 @@ import me.project.dtos.response.user.SimpleUserDTO;
 import me.project.email.EmailService;
 import me.project.email.EmailTemplates;
 import me.project.entitiy.Address;
+import me.project.entitiy.File;
 import me.project.entitiy.User;
 import me.project.enums.SearchOperation;
 import me.project.repository.UserRepository;
@@ -23,6 +24,7 @@ import me.project.search.specificator.Specifications;
 import me.project.service.address.IAddressService;
 import me.project.service.company.ICompanyService;
 import me.project.service.country.ICountryService;
+import me.project.service.files.IFileService;
 import me.project.service.order.IOrderService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -30,6 +32,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.mail.MessagingException;
@@ -49,7 +52,7 @@ public class UserService implements IUserService {
     private final IAddressService addressService;
     private final ICountryService countryService;
     private final IOrderService orderService;
-
+    private final IFileService fileService;
     private final EmailService emailService;
     private final EmailTemplates emailTemplates;
 
@@ -68,6 +71,16 @@ public class UserService implements IUserService {
 
     public User getUser(String email) {
         return userRepository.getByEmail(email);
+    }
+
+    public String getUserAvatar(UUID userId) {
+
+        File avatar = getUser(userId).getAvatar();
+
+        if(avatar == null)
+            return "";
+
+        return fileService.getFileUrl(avatar.getFileId());
     }
 
     public User findUserByEmail(String email) {
@@ -274,6 +287,20 @@ public class UserService implements IUserService {
         return user;
     }
 
+    public void uploadUserAvatar(UUID userId, MultipartFile file) {
+
+        User user = userRepository.findById(userId).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User with given id " + userId + " doesn't exist in database!")
+        );
+
+        UUID avatarId = fileService.uploadFile(file);
+
+        user.setAvatar(fileService.getFileById(avatarId));
+
+        userRepository.save(user);
+
+    }
+
     @Transactional
     public void updateAppUser(UUID id, UserUpdateDTO updateDTO) {
         User user = userRepository.findById(id).orElseThrow(
@@ -286,7 +313,9 @@ public class UserService implements IUserService {
 
         user = updateDTO.convertToUser(user);
 
-        if (user.getAppUserRole().equals(AppUserRole.CLIENT)) {
+        boolean isCompanyPresent = updateDTO.getCompanyName() != null && updateDTO.getTaxNumber() != null;
+
+        if (user.getAppUserRole().equals(AppUserRole.CLIENT) && isCompanyPresent) {
             companyService.updateCompany(
                     companyService.getCompanyByUser(user).getCompanyId(),
                     new CompanyUpdateDTO(
@@ -308,6 +337,25 @@ public class UserService implements IUserService {
             );
 
         }
+
+        userRepository.save(user);
+    }
+
+    public void updateUserAvatar(UUID userId, MultipartFile file) {
+
+        User user = userRepository.findById(userId).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User with given id " + userId + " doesn't exist in database!")
+        );
+
+        UUID newAvatarId = fileService.uploadFile(file);
+
+        File oldAvatar = user.getAvatar();
+
+        user.setAvatar(null);
+
+        fileService.deleteFile(oldAvatar.getFileId());
+
+        user.setAvatar(fileService.getFileById(newAvatarId));
 
         userRepository.save(user);
     }
@@ -388,5 +436,21 @@ public class UserService implements IUserService {
 
     public boolean existsByEmail(String email) {
         return userRepository.existsByEmail(email);
+    }
+
+    public void deleteUserAvatar(UUID userId) {
+
+        User user = userRepository.findById(userId).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User with given id " + userId + " doesn't exist in database!")
+        );
+
+        File avatar = user.getAvatar();
+
+        user.setAvatar(null);
+
+        userRepository.save(user);
+
+        fileService.deleteFile(avatar.getFileId());
+
     }
 }

@@ -11,6 +11,7 @@ import me.project.dtos.response.user.SimpleEmployeeDTO;
 import me.project.dtos.response.user.SimpleUserDTO;
 import me.project.entitiy.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.UUID;
@@ -19,6 +20,8 @@ public interface IUserService extends UserDetailsService {
     User getUser(UUID id);
 
     User getUser(String email);
+
+    String getUserAvatar(UUID userId);
 
     User findUserByEmail(String email);
 
@@ -44,7 +47,11 @@ public interface IUserService extends UserDetailsService {
 
     User createEmployee(CustomerRegisterDTO customerRegisterDTO);
 
+    void uploadUserAvatar(UUID userId, MultipartFile file);
+
     void updateAppUser(UUID id, UserUpdateDTO userCredentials);
+
+    void updateUserAvatar(UUID userId, MultipartFile file);
 
     void activateAndSetPassword(UUID userId, NewPasswordDTO newPasswordDTO);
 
@@ -57,4 +64,7 @@ public interface IUserService extends UserDetailsService {
     void deleteUserById(UUID id);
 
     boolean existsByEmail(String email);
+
+    void deleteUserAvatar(UUID userId);
+
 }

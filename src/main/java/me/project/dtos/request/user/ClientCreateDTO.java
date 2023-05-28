@@ -1,6 +1,5 @@
 package me.project.dtos.request.user;
 
-import me.project.auth.enums.AppUserRole;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

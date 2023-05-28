@@ -10,7 +10,6 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
 @Service
