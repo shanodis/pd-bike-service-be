@@ -1,5 +1,6 @@
 package me.project.enums;
 
+import me.project.entitiy.Bike;
 import me.project.entitiy.User;
 import me.project.search.SearchCriteria;
 
@@ -80,6 +81,17 @@ public enum SearchOperation {
                     criteria.getValue()
             );
         }
+    },
+
+    MATCH_JOIN_BIKE {
+      @Override
+      public <T> Predicate getPredicate(Root<T> root, SearchCriteria criteria, CriteriaBuilder builder) {
+          Join<T, Bike> bikeJoin = root.join("bike");
+          return builder.like(
+                  builder.lower(bikeJoin.get(criteria.getKey()))
+                  , "%" + criteria.getValue().toString().toLowerCase() + "%"
+          );
+      }
     },
 
     MATCH {

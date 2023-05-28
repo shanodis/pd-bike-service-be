@@ -1,12 +1,14 @@
 package me.project.controller;
 
 import me.project.dtos.request.PageRequestDTO;
+import me.project.dtos.request.user.ClientCreateDTO;
 import me.project.dtos.request.user.UserCreateDTO;
 import me.project.dtos.request.user.UserUpdateDTO;
 import me.project.dtos.response.bikes.SimpleBikeDTO;
 import me.project.dtos.response.page.PageResponse;
 import me.project.dtos.response.user.*;
 import me.project.service.bike.IBikeService;
+import me.project.service.files.IFileService;
 import me.project.service.user.IUserService;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -20,6 +22,7 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class UserController {
     private final IUserService userService;
+    private final IFileService fileService;
     private final IBikeService bikeService;
 
     @GetMapping
@@ -35,8 +38,13 @@ public class UserController {
         return BasicUserDTO.convertFromEntity(userService.getUser(userId));
     }
 
+    @GetMapping("{userId}/avatar")
+    public String getUserAvatar(@PathVariable UUID userId) {
+        return fileService.getFileUrl(userService.getUser(userId).getAvatar().getFileId());
+    }
+
     @GetMapping("{userId}/bikes")
-    public List<SimpleBikeDTO> getUserBikes(@PathVariable UUID userId, @RequestParam(required = false) String phrase) {
+    public List<SimpleBikeDTO> getUserBikes(@PathVariable UUID userId, @RequestParam(required = false,defaultValue = "") String phrase) {
         return bikeService.getBikesByUserAndPhrase(userId, phrase);
     }
 
@@ -46,27 +54,32 @@ public class UserController {
     }
 
     @GetMapping("page")
-    public PageResponse<SimpleUserDTO> getUsers(@RequestParam Integer pageNumber, @RequestParam Integer pageSize,
+    public PageResponse<SimpleUserDTO> getUsers(@RequestParam Integer page, @RequestParam Integer pageLimit,
                                                 @RequestParam String sortDir, @RequestParam String sortBy) {
-        return userService.getUsers(new PageRequestDTO(pageNumber, pageSize, sortDir, sortBy));
+        return userService.getUsers(new PageRequestDTO(page, pageLimit, sortDir, sortBy));
     }
 
     @GetMapping("customers/page")
-    public PageResponse<SimpleCustomerDTO> getSimpleCustomers(@RequestParam Integer pageNumber, @RequestParam Integer pageSize,
+    public PageResponse<SimpleCustomerDTO> getSimpleCustomers(@RequestParam Integer page, @RequestParam Integer pageLimit,
                                                               @RequestParam String sortDir, @RequestParam String sortBy,
                                                               @RequestParam(required = false) String phrase) {
-        return userService.getSimpleCustomers(new PageRequestDTO(pageNumber, pageSize, sortDir, sortBy), phrase);
+        return userService.getSimpleCustomers(new PageRequestDTO(page, pageLimit, sortDir, sortBy), phrase);
     }
 
     @GetMapping("employees/page")
-    public PageResponse<SimpleEmployeeDTO> getSimpleEmployees(@RequestParam Integer pageNumber, @RequestParam Integer pageSize,
+    public PageResponse<SimpleEmployeeDTO> getSimpleEmployees(@RequestParam Integer page, @RequestParam Integer pageLimit,
                                                               @RequestParam String sortDir, @RequestParam String sortBy) {
-        return userService.getSimpleEmployees(new PageRequestDTO(pageNumber, pageSize, sortDir, sortBy));
+        return userService.getSimpleEmployees(new PageRequestDTO(page, pageLimit, sortDir, sortBy));
     }
 
     @PostMapping
     public SimpleUserDTO createAppUser(@RequestBody UserCreateDTO userCredentials) {
         return SimpleUserDTO.convertFromEntity(userService.createAppUser(userCredentials));
+    }
+
+    @PostMapping("add-customer")
+    public UUID createCustomer(@RequestBody ClientCreateDTO clientCreateDTO) {
+        return userService.createCustomer(clientCreateDTO);
     }
 
     @PutMapping("{userId}")

@@ -1,8 +1,11 @@
 package me.project.config;
 
+import me.project.auth.oauth2.CustomOAuth2UserService;
+import me.project.auth.oauth2.OAuth2FailureHandler;
+import me.project.auth.oauth2.Oauth2SuccessLoginHandler;
 import me.project.service.user.UserService;
 import me.project.auth.formLogin.FormLoginUsernameAndPasswordAuthenticationFilter;
-import me.project.auth.jwt.JwtTokenVerifier;
+import me.project.auth.jwt.JwtTokenFilter;
 import com.ulisesbocchio.jasyptspringboot.annotation.EnableEncryptableProperties;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -26,6 +29,8 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 public class ApplicationSecurityConfig extends WebSecurityConfigurerAdapter {
     private final UserService userService;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final CustomOAuth2UserService oAuth2UserService;
+
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -37,11 +42,16 @@ public class ApplicationSecurityConfig extends WebSecurityConfigurerAdapter {
                 .httpBasic()
                 .and()
                 .oauth2Login()
+                .userInfoEndpoint()
+                .userService(oAuth2UserService)
+                .and()
+                .failureHandler(new OAuth2FailureHandler())
+                .successHandler(new Oauth2SuccessLoginHandler(userService))
                 .and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .addFilter(new FormLoginUsernameAndPasswordAuthenticationFilter(authenticationManager(), userService))
-                .addFilterAfter(new JwtTokenVerifier(), FormLoginUsernameAndPasswordAuthenticationFilter.class)
+                .addFilterAfter(new JwtTokenFilter(), FormLoginUsernameAndPasswordAuthenticationFilter.class)
                 .authorizeRequests()
                 .antMatchers("/index", "/css/*", "/js/*", "/swagger-ui.html").permitAll()
 

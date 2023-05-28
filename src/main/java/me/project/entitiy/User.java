@@ -2,6 +2,7 @@ package me.project.entitiy;
 
 import me.project.auth.enums.AppUserRole;
 import me.project.auth.enums.AuthProvider;
+import me.project.dtos.request.user.ClientCreateDTO;
 import me.project.dtos.request.user.CustomerRegisterDTO;
 import me.project.dtos.request.user.UserCreateDTO;
 import com.fasterxml.jackson.annotation.JsonBackReference;
@@ -101,6 +102,23 @@ public class User implements UserDetails {
         this.createdOn = LocalDateTime.now();
     }
 
+    public User(ClientCreateDTO clientCreateDTO,
+                Boolean locked,
+                Boolean enabled) {
+        this.email = clientCreateDTO.getEmail().trim();
+        this.appUserRole = AppUserRole.CLIENT;
+        if(clientCreateDTO.getNote() != null)
+            this.note = clientCreateDTO.getNote().trim();
+        this.firstName = clientCreateDTO.getFirstName().trim();
+        this.lastName = clientCreateDTO.getLastName().trim();
+        this.phoneNumberPrefix = clientCreateDTO.getPhoneNumberPrefix().trim();
+        this.phoneNumber = clientCreateDTO.getPhoneNumber().trim();
+        this.isPasswordChangeRequired = true;
+        this.locked = locked;
+        this.enabled = enabled;
+        this.createdOn = LocalDateTime.now();
+    }
+
     public User() {
     }
 
@@ -118,6 +136,17 @@ public class User implements UserDetails {
         this.locked = locked;
         this.enabled = enabled;
         this.createdOn = LocalDateTime.now();
+    }
+
+    public User(String email, String firstName, String lastName, AppUserRole appUserRole, Boolean locked, Boolean enabled) {
+        this.email = email;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.appUserRole = appUserRole;
+        this.locked = locked;
+        this.enabled = enabled;
+        this.createdOn = LocalDateTime.now();
+        this.isPasswordChangeRequired = true;
     }
 
     @Override

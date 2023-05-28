@@ -21,11 +21,11 @@ public class ServiceController {
     }
 
     @GetMapping
-    public PageResponse<ServiceDTO> getServices(@RequestParam Integer pageNumber, @RequestParam Integer pageSize,
+    public PageResponse<ServiceDTO> getServices(@RequestParam Integer page, @RequestParam Integer pageLimit,
                                                 @RequestParam String sortDir, @RequestParam String sortBy,
                                                 @RequestParam(required = false) String phrase) {
 
-        return serviceService.getAllServices(new PageRequestDTO(pageNumber, pageSize, sortDir, sortBy), phrase);
+        return serviceService.getAllServices(new PageRequestDTO(page, pageLimit, sortDir, sortBy), phrase);
     }
 
 }

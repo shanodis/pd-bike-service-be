@@ -3,6 +3,7 @@ package me.project.dtos.request;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
@@ -10,41 +11,60 @@ import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.constraints.NotNull;
 import java.util.Arrays;
+import java.util.Locale;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
 public class PageRequestDTO {
 
-    @NotNull
-    private Integer PageNumber;
+    public PageRequestDTO(Integer page, Integer pageLimit, String sortDir, String sortBy) {
 
-    @NotNull
-    private Integer PageSize;
+        this.page = 1;
+        this.pageLimit = 200;
+        this.sortDir = "asc";
 
-    @NotNull
-    private String SortDirection;
+        if (page != null) {
+            this.page = page;
+        }
 
-    @NotNull
-    private String SortByPropertyName;
+        if (pageLimit != null) {
+            this.pageLimit = pageLimit;
+        }
+
+        if (sortDir != null) {
+            this.sortDir = sortDir.toLowerCase();
+        }
+
+        if (sortBy != null) {
+            this.sortBy = sortBy;
+        }
+    }
+
+    private Integer page;
+
+    private Integer pageLimit ;
+
+    private String sortDir;
+
+    private String sortBy;
 
     public <T> PageRequest getRequest(Class<T> cls) {
-        if(Arrays.stream(cls.getDeclaredFields()).noneMatch(field -> field.getName().equals(SortByPropertyName)))
-            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "Sorting Field:" + SortByPropertyName + " doesn't exist on this entity");
+        if(Arrays.stream(cls.getDeclaredFields()).noneMatch(field -> field.getName().equals(sortBy)))
+            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "Sorting Field:" + sortBy + " doesn't exist on this entity");
 
-        if(!SortDirection.equals("ASC") && !SortDirection.equals("DESC"))
+        if(!sortDir.equals("asc") && !sortDir.equals("desc"))
             throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "Sort Direction must be ASC or DESC");
 
-        if(PageNumber < 1)
+        if(page < 1)
             throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "Page Number cannot be less than 1");
 
-        if(PageSize < -1 || PageSize == 0)
+        if(pageLimit < -1 || pageLimit == 0)
             throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "Page Size cannot be less than -1 or equal 0");
 
-        if(PageSize == -1)
-            return PageRequest.of(PageNumber - 1, Integer.MAX_VALUE, Sort.Direction.valueOf(SortDirection) , SortByPropertyName);
+        if(pageLimit == -1)
+            return PageRequest.of(page - 1, Integer.MAX_VALUE, Sort.Direction.valueOf(sortDir.toUpperCase()) , sortBy);
 
-        return PageRequest.of(PageNumber - 1, PageSize, Sort.Direction.valueOf(SortDirection) , SortByPropertyName);
+        return PageRequest.of(page - 1, pageLimit, Sort.Direction.valueOf(sortDir.toUpperCase()) , sortBy);
     }
 
 }

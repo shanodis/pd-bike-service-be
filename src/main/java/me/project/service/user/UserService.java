@@ -164,12 +164,81 @@ public class UserService implements IUserService {
         return user;
     }
 
+    @Transactional
+    public UUID createCustomer(ClientCreateDTO clientCreateDTO) {
+        if (userRepository.existsByEmail(clientCreateDTO.getEmail()))
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "This email is already taken!");
+
+        User user = new User(clientCreateDTO, true, false);
+
+        boolean createCompanyPresent = clientCreateDTO.getCompanyName() != null && clientCreateDTO.getTaxNumber() != null;
+        boolean createCompany = false;
+
+        if (createCompanyPresent)
+            createCompany = !clientCreateDTO.getCompanyName().isEmpty() && !clientCreateDTO.getTaxNumber().isEmpty();
+
+        if (createCompanyPresent && createCompany)
+            user.setCompany(
+                    companyService.createCompanyIfNotExists(
+                            new CompanyCreateDTO(
+                                    user,
+                                    clientCreateDTO.getCompanyName().trim(),
+                                    clientCreateDTO.getTaxNumber().trim())
+                    ));
+
+        boolean createAddressPresent = clientCreateDTO.getStreetName() != null && clientCreateDTO.getPostCode() != null
+                && clientCreateDTO.getCity() != null && clientCreateDTO.getCountryId() != null;
+        boolean createAddress = false;
+
+        if (createAddressPresent)
+            createAddress = !clientCreateDTO.getStreetName().isEmpty() && !clientCreateDTO.getPostCode().isEmpty() && !clientCreateDTO.getCity().isEmpty();
+
+        userRepository.save(user);
+
+        if (createAddressPresent && createAddress)
+            user.setAddress(
+                    addressService.createAddressIfNotExists(
+                            new Address(
+                                    user,
+                                    countryService.getCountryById(clientCreateDTO.getCountryId()),
+                                    clientCreateDTO.getStreetName(),
+                                    clientCreateDTO.getPostCode(),
+                                    clientCreateDTO.getCity()
+                            )
+                    ));
+
+        userRepository.save(user);
+
+        emailService.send(
+                user.getEmail(),
+                emailTemplates.emailTemplateForWelcome(user),
+                "Welcome to Bike Service!"
+        );
+
+        return user.getUserId();
+    }
+
     public User registerCustomer(CustomerRegisterDTO customerRegisterDTO) {
 
         if (userRepository.existsByEmail(customerRegisterDTO.getEmail()))
             throw new ResponseStatusException(HttpStatus.CONFLICT, "This email is already taken!");
 
         User user = new User(customerRegisterDTO, true, false, AppUserRole.CLIENT);
+
+        userRepository.save(user);
+
+        emailService.send(
+                user.getEmail(),
+                emailTemplates.emailTemplateForWelcome(user),
+                "Welcome to Bike Service!"
+        );
+
+        return user;
+    }
+
+    public User createOAuth2User(String email, String firstName, String lastName, AppUserRole appUserRole) {
+
+        User user = new User(email, firstName, lastName, AppUserRole.CLIENT, true, false);
 
         userRepository.save(user);
 
@@ -259,11 +328,29 @@ public class UserService implements IUserService {
 
     }
 
+    public void resetPassword(String email) {
+        User user = userRepository.findByEmail(email).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User with given email " + email + " doesn't exist in database!")
+        );
+
+        changeStateOfUser(user.getUserId());
+
+        user.setIsPasswordChangeRequired(true);
+
+        emailService.send(
+                user.getEmail(),
+                emailTemplates.emailTemplateForResetPassword(user),
+                "Password Reset Requested!"
+        );
+
+        userRepository.save(user);
+
+    }
+
     public void changeUserPassword(UUID userId, ChangePasswordDTO changePasswordDTO) {
         User user = userRepository.findById(userId).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User with given id " + userId + " doesn't exist in database!")
         );
-
         String oldPassword = bCryptPasswordEncoder.encode(changePasswordDTO.getOldPassword());
 
         if (!oldPassword.equals(user.getPassword()))
@@ -291,5 +378,9 @@ public class UserService implements IUserService {
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User with given id " + id + " doesn't exist in database!")
         );
         userRepository.deleteById(id);
+    }
+
+    public boolean existsByEmail(String email) {
+        return userRepository.existsByEmail(email);
     }
 }

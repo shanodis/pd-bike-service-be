@@ -13,29 +13,132 @@ import java.util.UUID;
 @Data
 @AllArgsConstructor
 public class CustomerDetailsDTO implements Serializable {
-    private final UUID userId;
-    private final String firstName;
-    private final String lastName;
-    private final String phoneNumberPrefix;
-    private final String phoneNumber;
-    private final String note;
-    private final UUID companyId;
-    private final String companyName;
-    private final String taxNumber;
-    private final UUID addressId;
-    private final String streetName;
-    private final String postCode;
-    private final String city;
-    private final UUID countryId;
-    private final String countryName;
+    private UUID userId;
+    private String firstName;
+    private String lastName;
+    private String phoneNumberPrefix;
+    private String phoneNumber;
+    private String note;
+    private UUID companyId;
+    private String companyName;
+    private String taxNumber;
+    private UUID addressId;
+    private String streetName;
+    private String postCode;
+    private String city;
+    private UUID countryId;
+    private String countryName;
+
+    public CustomerDetailsDTO(UUID userId,
+                              String firstName,
+                              String lastName,
+                              String phoneNumberPrefix,
+                              String phoneNumber,
+                              String note) {
+        this.userId = userId;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.phoneNumberPrefix = phoneNumberPrefix;
+        this.phoneNumber = phoneNumber;
+        this.note = note;
+    }
+
+    public CustomerDetailsDTO(UUID userId,
+                              String firstName,
+                              String lastName,
+                              String phoneNumberPrefix,
+                              String phoneNumber,
+                              String note,
+                              UUID companyId,
+                              String companyName,
+                              String taxNumber) {
+        this.userId = userId;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.phoneNumberPrefix = phoneNumberPrefix;
+        this.phoneNumber = phoneNumber;
+        this.note = note;
+        this.companyId = companyId;
+        this.companyName = companyName;
+        this.taxNumber = taxNumber;
+    }
+
+    public CustomerDetailsDTO(UUID userId,
+                              String firstName,
+                              String lastName,
+                              String phoneNumberPrefix,
+                              String phoneNumber,
+                              String note,
+                              UUID addressId,
+                              String streetName,
+                              String postCode,
+                              String city,
+                              UUID countryId,
+                              String countryName) {
+        this.userId = userId;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.phoneNumberPrefix = phoneNumberPrefix;
+        this.phoneNumber = phoneNumber;
+        this.note = note;
+        this.addressId = addressId;
+        this.streetName = streetName;
+        this.postCode = postCode;
+        this.city = city;
+        this.countryId = countryId;
+        this.countryName = countryName;
+    }
 
     public static CustomerDetailsDTO convertFromEntity(User user) {
 
         Company company = user.getCompany();
-        Address address = user.getAddress();
-        Country country = address.getCountry();
+        boolean isCompanyPresent = company != null;
 
-        return new CustomerDetailsDTO(
+        Address address = user.getAddress();
+        boolean isAddressPresent = address != null;
+
+        Country country = null;
+        if (isAddressPresent) {
+            country = address.getCountry();
+        }
+
+        if (!isCompanyPresent && !isAddressPresent)
+            return new CustomerDetailsDTO(
+                    user.getUserId(),
+                    user.getFirstName(),
+                    user.getLastName(),
+                    user.getPhoneNumberPrefix(),
+                    user.getPhoneNumber(),
+                    user.getNote()
+            );
+        else if (isCompanyPresent && !isAddressPresent)
+            return new CustomerDetailsDTO(
+                    user.getUserId(),
+                    user.getFirstName(),
+                    user.getLastName(),
+                    user.getPhoneNumberPrefix(),
+                    user.getPhoneNumber(),
+                    user.getNote(),
+                    company.getCompanyId(),
+                    company.getCompanyName(),
+                    company.getTaxNumber()
+            );
+        else if (!isCompanyPresent)
+            return new CustomerDetailsDTO(
+                    user.getUserId(),
+                    user.getFirstName(),
+                    user.getLastName(),
+                    user.getPhoneNumberPrefix(),
+                    user.getPhoneNumber(),
+                    user.getNote(),
+                    address.getAddressId(),
+                    address.getStreetName(),
+                    address.getPostCode(),
+                    address.getCity(),
+                    country.getCountryId(),
+                    country.getCountryName()
+            );
+        else return new CustomerDetailsDTO(
                 user.getUserId(),
                 user.getFirstName(),
                 user.getLastName(),

@@ -23,6 +23,7 @@ public class SwaggerConfiguration {
                 .group("frontend")
                 .pathsToMatch(
                         "/api/v1/auth/**",
+                        "/api/v1/bikes/**",
                         "/api/v1/users/**",
                         "/api/v1/dictionaries/**",
                         "/api/v1/services/**"

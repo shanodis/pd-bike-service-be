@@ -18,7 +18,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.time.LocalDate;
 import java.util.Date;
 import java.util.UUID;
 
@@ -31,42 +30,55 @@ public class FormLoginUsernameAndPasswordAuthenticationFilter extends UsernamePa
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
-        if (this.postOnly && !request.getMethod().equals("POST")) {
+        if (this.postOnly && !request.getMethod().equals("POST"))
             throw new AuthenticationServiceException("Authentication method not supported: " + request.getMethod());
-        } else {
-            String username = this.obtainUsername(request);
-            username = username != null ? username : "";
-            username = username.trim();
-            String password = this.obtainPassword(request);
-            password = password != null ? password : "";
-            UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(username, password);
-            this.setDetails(request, authRequest);
-            return this.getAuthenticationManager().authenticate(authRequest);
-        }
+
+        String username = this.obtainUsername(request);
+        username = username != null ? username : "";
+        username = username.trim();
+
+        String password = this.obtainPassword(request);
+        password = password != null ? password : "";
+
+        UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(username, password);
+        this.setDetails(request, authRequest);
+        return this.getAuthenticationManager().authenticate(authRequest);
+
     }
 
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain,
                                             Authentication authResult) throws IOException, ServletException {
-        try{
+        try {
             String key = "someStringHashToHaveReallyGoodSecurityOverHereSoNoOneWithAmateurSkillsWouldn'tHackThis";
             String username = this.obtainUsername(request);
 
             UUID userId = userService.getUser(username).getUserId();
-            String token = Jwts.builder()
+
+            String accessToken = Jwts.builder()
                     .setSubject(authResult.getName())
                     .claim("authorities", authResult.getAuthorities())
                     .claim("userId", userId)
                     .setIssuedAt(new Date())
-                    .setExpiration(java.sql.Date.valueOf(LocalDate.now().plusDays(1)))
+                    .setExpiration(new Date(System.currentTimeMillis() + 2 * 60 * 1000))
                     .signWith(Keys.hmacShaKeyFor(key.getBytes(StandardCharsets.UTF_8)))
                     .compact();
 
-            response.addHeader("Authorization", "Bearer " + token);
-        }catch (Exception e){
-           if(e.equals(new IOException(e.getMessage())))
-            throw new IOException(e.getMessage());
-           else throw new ServletException(e.getMessage());
+            String refreshToken = Jwts.builder()
+                    .setSubject(authResult.getName())
+                    .claim("userId", userId)
+                    .setExpiration(new Date(System.currentTimeMillis() + 12 * 60 * 60 * 1000))
+                    .signWith(Keys.hmacShaKeyFor(key.getBytes(StandardCharsets.UTF_8)))
+                    .compact();
+
+
+            response.addHeader("Authorization", "Bearer " + accessToken);
+            response.addHeader("Authorization-Refresh", "Bearer " + refreshToken);
+
+        } catch (Exception e) {
+            if (e.equals(new IOException(e.getMessage())))
+                throw new IOException(e.getMessage());
+            else throw new ServletException(e.getMessage());
         }
     }
 }

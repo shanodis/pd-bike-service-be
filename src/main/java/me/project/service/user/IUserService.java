@@ -1,5 +1,6 @@
 package me.project.service.user;
 
+import me.project.auth.enums.AppUserRole;
 import me.project.dtos.request.PageRequestDTO;
 import me.project.dtos.request.user.*;
 import me.project.dtos.response.DictionaryResponseDTO;
@@ -37,11 +38,17 @@ public interface IUserService extends UserDetailsService {
 
     User registerCustomer(CustomerRegisterDTO customerRegisterDTO);
 
+    UUID createCustomer(ClientCreateDTO clientCreateDTO);
+
+    User createOAuth2User(String email, String firstName, String lastName, AppUserRole appUserRole);
+
     User createEmployee(CustomerRegisterDTO customerRegisterDTO);
 
     void updateAppUser(UUID id, UserUpdateDTO userCredentials);
 
     void activateAndSetPassword(UUID userId, NewPasswordDTO newPasswordDTO);
+
+    void resetPassword(String email);
 
     void changeUserPassword(UUID userId, ChangePasswordDTO changePasswordDTO);
 
@@ -49,4 +56,5 @@ public interface IUserService extends UserDetailsService {
 
     void deleteUserById(UUID id);
 
+    boolean existsByEmail(String email);
 }

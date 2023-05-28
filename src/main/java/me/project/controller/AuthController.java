@@ -1,5 +1,6 @@
 package me.project.controller;
 
+import me.project.auth.jwt.JwtTokenRefresher;
 import me.project.dtos.request.user.ChangePasswordDTO;
 import me.project.dtos.request.user.CustomerRegisterDTO;
 import me.project.dtos.request.user.NewPasswordDTO;
@@ -8,6 +9,8 @@ import me.project.service.user.IUserService;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.UUID;
 
 @RestController
@@ -15,6 +18,12 @@ import java.util.UUID;
 @AllArgsConstructor
 public class AuthController {
     private final IUserService iUserService;
+    private final JwtTokenRefresher tokenRefresher;
+
+    @GetMapping("refresh-access")
+    public void refreshAccessToken(HttpServletRequest request, HttpServletResponse response) {
+        tokenRefresher.refreshToken(request, response);
+    }
 
     @PostMapping("register")
     public User registerCustomer(@RequestBody CustomerRegisterDTO customerRegisterDTO) {
@@ -24,6 +33,11 @@ public class AuthController {
     @PostMapping("employee-create")
     public User createEmployee(@RequestBody CustomerRegisterDTO employeeRegisterDTO) {
         return iUserService.createEmployee(employeeRegisterDTO);
+    }
+
+    @PatchMapping("/reset-password")
+    public void resetPassword(@RequestBody String email) {
+        iUserService.resetPassword(email);
     }
 
     @PutMapping("{id}/password")

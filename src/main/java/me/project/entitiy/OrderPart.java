@@ -22,8 +22,7 @@ public class OrderPart {
             strategy = GenerationType.AUTO
     )
     @Column(
-            nullable = false,
-            updatable = false
+            nullable = false
     )
     private UUID orderPartId;
 
@@ -36,4 +35,10 @@ public class OrderPart {
     private String orderCode;
     private String orderName;
     private BigDecimal orderPrice;
+
+    public OrderPart(String orderCode, String orderName, BigDecimal orderPrice) {
+        this.orderCode = orderCode;
+        this.orderName = orderName;
+        this.orderPrice = orderPrice;
+    }
 }

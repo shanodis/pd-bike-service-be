@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.UUID;
+
 @RestController
 @RequestMapping(path = "api/v1/dictionaries")
 @AllArgsConstructor
@@ -27,34 +29,39 @@ public class DictionaryController {
     private final IOrderStatusService orderStatus;
     private final IServiceService serviceService;
 
+    //TODO add userId parameter
     @GetMapping("bikes")
-    public PageResponse<DictionaryResponseDTO> getBikes(@RequestParam Integer pageNumber, @RequestParam Integer pageSize,
-                                                        @RequestParam String sortDir, @RequestParam String sortBy) {
-        return bikeService.getBikesDictionary(new PageRequestDTO(pageNumber, pageSize, sortDir, sortBy));
+    public PageResponse<DictionaryResponseDTO> getBikes(@RequestParam Integer page, @RequestParam Integer pageLimit,
+                                                        @RequestParam String sortDir, @RequestParam String sortBy,
+                                                        @RequestParam(required = false) UUID userId) {
+        return bikeService.getBikesDictionary(new PageRequestDTO(page, pageLimit, sortDir, sortBy), userId);
     }
 
     @GetMapping("countries")
-    public PageResponse<CountryWithoutAddressesDTO> getCountries(@RequestParam Integer pageNumber, @RequestParam Integer pageSize,
-                                                         @RequestParam String sortDir, @RequestParam String sortBy) {
-        return countryService.getAllCountries(new PageRequestDTO(pageNumber, pageSize, sortDir, sortBy));
+    public PageResponse<CountryWithoutAddressesDTO> getCountries(
+            @RequestParam(required = false) Integer page,
+            @RequestParam(required = false) Integer pageLimit,
+            @RequestParam(required = false) String sortDir,
+            @RequestParam(required = false, defaultValue = "countryName") String sortBy) {
+        return countryService.getAllCountries(new PageRequestDTO(page, pageLimit, sortDir, sortBy));
     }
 
     @GetMapping("order-statuses")
-    public PageResponse<DictionaryResponseDTO> getStatuses(@RequestParam Integer pageNumber, @RequestParam Integer pageSize,
+    public PageResponse<DictionaryResponseDTO> getStatuses(@RequestParam Integer page, @RequestParam Integer pageLimit,
                                                            @RequestParam String sortDir, @RequestParam String sortBy) {
-        return orderStatus.getAllStatusesDictionary(new PageRequestDTO(pageNumber, pageSize, sortDir, sortBy));
+        return orderStatus.getAllStatusesDictionary(new PageRequestDTO(page, pageLimit, sortDir, sortBy));
     }
 
     @GetMapping("services")
-    public PageResponse<ServiceDTO> getServices(@RequestParam Integer pageNumber, @RequestParam Integer pageSize,
+    public PageResponse<ServiceDTO> getServices(@RequestParam Integer page, @RequestParam Integer pageLimit,
                                                 @RequestParam String sortDir, @RequestParam String sortBy) {
-        return serviceService.getAllServicesDictionary(new PageRequestDTO(pageNumber, pageSize, sortDir, sortBy));
+        return serviceService.getAllServicesDictionary(new PageRequestDTO(page, pageLimit, sortDir, sortBy));
     }
 
     @GetMapping("users")
-    public PageResponse<DictionaryResponseDTO> getUsers(@RequestParam Integer pageNumber, @RequestParam Integer pageSize,
+    public PageResponse<DictionaryResponseDTO> getUsers(@RequestParam Integer page, @RequestParam Integer pageLimit,
                                                         @RequestParam String sortDir, @RequestParam String sortBy) {
-        return userService.getUsersDictionary(new PageRequestDTO(pageNumber, pageSize, sortDir, sortBy));
+        return userService.getUsersDictionary(new PageRequestDTO(page, pageLimit, sortDir, sortBy));
     }
 
 }
