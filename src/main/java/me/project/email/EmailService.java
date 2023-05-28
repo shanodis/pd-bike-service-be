@@ -3,10 +3,12 @@ package me.project.email;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
@@ -32,9 +34,9 @@ public class EmailService {
             helper.setSubject(subject);
             helper.setFrom("bike-no-reply@op.pl");
             mailSender.send(mimeMessage);
-        } catch (MessagingException e) {
+        } catch (Exception e) {
             LOGGER.error("failed to send email", e);
-            throw new IllegalStateException("failed to send email");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"failed to send email");
         }
     }
 

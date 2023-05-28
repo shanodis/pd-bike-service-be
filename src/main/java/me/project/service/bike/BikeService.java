@@ -10,18 +10,20 @@ import me.project.dtos.response.page.PageResponse;
 import me.project.entitiy.Bike;
 import me.project.enums.SearchOperation;
 import me.project.repository.BikeRepository;
+import me.project.repository.OrderPartRepository;
+import me.project.repository.OrderRepository;
+import me.project.repository.OrderServiceRepository;
 import me.project.search.SearchCriteria;
 import me.project.search.specificator.Specifications;
 import me.project.service.user.IUserService;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import javax.transaction.Transactional;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -30,12 +32,22 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class BikeService implements IBikeService {
     private final BikeRepository bikeRepository;
+    private final OrderServiceRepository orderServiceRepository;
+    private final OrderPartRepository orderPartRepository;
+    private final OrderRepository orderRepository;
     private final IUserService userService;
 
     @Autowired
-    public BikeService(@Lazy IUserService userService, BikeRepository bikeRepository) {
+    public BikeService(@Lazy IUserService userService,
+                       BikeRepository bikeRepository,
+                       OrderServiceRepository orderServiceRepository,
+                       OrderPartRepository orderPartRepository,
+                       OrderRepository orderRepository) {
         this.bikeRepository = bikeRepository;
         this.userService = userService;
+        this.orderServiceRepository = orderServiceRepository;
+        this.orderPartRepository = orderPartRepository;
+        this.orderRepository = orderRepository;
     }
 
 
@@ -55,7 +67,7 @@ public class BikeService implements IBikeService {
 
         Specifications<Bike> bikeSpecifications = new Specifications<>();
 
-        if(userId != null)
+        if (userId != null)
             bikeSpecifications.and(new SearchCriteria("user", userService.getUser(userId), SearchOperation.EQUAL));
 
         if (phrase != null)
@@ -109,10 +121,25 @@ public class BikeService implements IBikeService {
         bikeRepository.save(bike);
     }
 
+    @Transactional
     public void deleteBike(UUID bikeId) {
-        bikeRepository.findById(bikeId).orElseThrow(
+
+        Bike bike = bikeRepository.findById(bikeId).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, NOT_FOUND(bikeId))
         );
+
+        bike.setUser(null);
+
+        bikeRepository.save(bike);
+
+        bike.getOrders()
+                .forEach(order -> {
+                    orderServiceRepository.deleteAll(order.getOrderServices());
+                    orderPartRepository.deleteAll(order.getOrderParts());
+                });
+
+
+        orderRepository.deleteAll(bike.getOrders());
 
         bikeRepository.deleteById(bikeId);
     }

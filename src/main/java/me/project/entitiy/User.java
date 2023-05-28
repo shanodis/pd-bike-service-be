@@ -130,6 +130,7 @@ public class User implements UserDetails {
         this.appUserRole = role;
         this.firstName = customerRegisterDTO.getFirstName().trim();
         this.lastName = customerRegisterDTO.getLastName().trim();
+        this.note = customerRegisterDTO.getNote().trim();
         this.phoneNumberPrefix = customerRegisterDTO.getPhoneNumberPrefix().trim();
         this.phoneNumber = customerRegisterDTO.getPhoneNumber().trim();
         this.isPasswordChangeRequired = true;

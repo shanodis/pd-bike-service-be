@@ -15,6 +15,7 @@ public class BasicUserDTO implements Serializable {
     private final UUID userId;
     private final String firstName;
     private final String lastName;
+    private final String note;
     @NotNull
     private final AppUserRole appUserRole;
 
@@ -23,6 +24,7 @@ public class BasicUserDTO implements Serializable {
                 user.getUserId(),
                 user.getFirstName(),
                 user.getLastName(),
+                user.getNote(),
                 user.getAppUserRole()
         );
     }

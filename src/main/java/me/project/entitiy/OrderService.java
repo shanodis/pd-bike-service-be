@@ -37,5 +37,4 @@ public class OrderService {
     @JsonBackReference
     private Order order;
 
-    private BigDecimal orderPrice;
 }

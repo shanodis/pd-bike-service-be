@@ -37,7 +37,7 @@ public class OrderInvoiceDTO implements Serializable {
 
         orderParts.forEach(orderPart -> totalPrice[0] = totalPrice[0].add(orderPart.getOrderPrice()));
 
-        orderServices.forEach(orderService -> totalPrice[0] = totalPrice[0].add(orderService.getOrderPrice()));
+        orderServices.forEach(orderService -> totalPrice[0] = totalPrice[0].add(orderService.getService().getServicePrice()));
 
         return new OrderInvoiceDTO(
 

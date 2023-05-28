@@ -7,7 +7,9 @@ import lombok.Data;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Data
 @AllArgsConstructor
@@ -24,13 +26,19 @@ public class OrderPaginationResponseDTO implements Serializable {
 
     private final UUID userId;
 
+    private final List<String> servicesNames;
+
     public static OrderPaginationResponseDTO convertFromEntity(Order order) {
         return new OrderPaginationResponseDTO(
                 order.getOrderId(),
                 order.getBike().getBikeName(),
                 order.getBike().getBikeModel(),
                 order.getCreatedOn(),
-                order.getUser().getUserId()
+                order.getUser().getUserId(),
+                order.getOrderServices()
+                        .stream()
+                        .map(orderService -> orderService.getService().getServiceName())
+                        .collect(Collectors.toList())
         );
     }
 }

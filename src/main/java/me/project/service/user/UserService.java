@@ -32,6 +32,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import javax.mail.MessagingException;
+import javax.mail.SendFailedException;
 import javax.transaction.Transactional;
 import java.util.List;
 import java.util.UUID;
@@ -164,7 +166,7 @@ public class UserService implements IUserService {
         return user;
     }
 
-    @Transactional
+    @Transactional(rollbackOn = {SendFailedException.class, MessagingException.class})
     public UUID createCustomer(ClientCreateDTO clientCreateDTO) {
         if (userRepository.existsByEmail(clientCreateDTO.getEmail()))
             throw new ResponseStatusException(HttpStatus.CONFLICT, "This email is already taken!");
@@ -218,6 +220,7 @@ public class UserService implements IUserService {
         return user.getUserId();
     }
 
+    @Transactional(rollbackOn = {SendFailedException.class, MessagingException.class})
     public User registerCustomer(CustomerRegisterDTO customerRegisterDTO) {
 
         if (userRepository.existsByEmail(customerRegisterDTO.getEmail()))
@@ -236,6 +239,7 @@ public class UserService implements IUserService {
         return user;
     }
 
+    @Transactional(rollbackOn = {SendFailedException.class, MessagingException.class})
     public User createOAuth2User(String email, String firstName, String lastName, AppUserRole appUserRole) {
 
         User user = new User(email, firstName, lastName, AppUserRole.CLIENT, true, false);
@@ -251,6 +255,7 @@ public class UserService implements IUserService {
         return user;
     }
 
+    @Transactional(rollbackOn = {SendFailedException.class, MessagingException.class})
     public User createEmployee(CustomerRegisterDTO customerRegisterDTO) {
 
         if (userRepository.existsByEmail(customerRegisterDTO.getEmail()))
@@ -328,6 +333,7 @@ public class UserService implements IUserService {
 
     }
 
+    @Transactional(rollbackOn = {SendFailedException.class, MessagingException.class})
     public void resetPassword(String email) {
         User user = userRepository.findByEmail(email).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User with given email " + email + " doesn't exist in database!")

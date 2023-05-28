@@ -15,7 +15,12 @@ public interface IOrderService {
 
     Order getById(UUID orderId);
 
-    PageResponse<OrderPaginationResponseDTO> getOrders(PageRequestDTO requestDTO, String phrase, LocalDateTime orderDateFrom, LocalDateTime orderDateTo, UUID orderStatusId);
+    PageResponse<OrderPaginationResponseDTO> getOrders(PageRequestDTO requestDTO,
+                                                       String phrase,
+                                                       LocalDateTime orderDateFrom,
+                                                       LocalDateTime orderDateTo,
+                                                       UUID orderStatusId,
+                                                       UUID userId);
 
     UUID createOrder(OrderCreateRequestDTO request);
 
@@ -24,4 +29,8 @@ public interface IOrderService {
     void updateOrdersOrderPart(UUID orderId, UUID orderPartId, UUID newOrderPartId);
 
     void deleteOrdersOrderPart(UUID orderId, UUID orderPartId);
+
+    void updateOrderService(UUID orderId, UUID orderStatusId);
+
+    void updateOrderNote(UUID orderId, String note);
 }

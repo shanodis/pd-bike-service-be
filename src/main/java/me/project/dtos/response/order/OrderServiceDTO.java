@@ -25,7 +25,7 @@ public class OrderServiceDTO implements Serializable {
                 orderService.getOrderServiceId(),
                 service.getServiceId(),
                 service.getServiceName(),
-                orderService.getOrderPrice()
+                service.getServicePrice()
         );
     }
 }

@@ -37,9 +37,11 @@ public class ServiceService implements IServiceService {
 
     public PageResponse<ServiceDTO> getAllServices(PageRequestDTO pageRequestDTO, String phrase) {
 
-        if (phrase.isEmpty())
-            serviceRepository.findAll(pageRequestDTO.getRequest(me.project.entitiy.Service.class))
-                    .map(ServiceDTO::convertFromEntity);
+        if (phrase == null)
+            return new PageResponse<>(
+                    serviceRepository.findAll(pageRequestDTO.getRequest(me.project.entitiy.Service.class))
+                            .map(ServiceDTO::convertFromEntity)
+            );
 
         return new PageResponse<>(
                 serviceRepository.findAllByServiceName(phrase, pageRequestDTO.getRequest(me.project.entitiy.Service.class))

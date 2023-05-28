@@ -18,6 +18,7 @@ public class CustomerDetailsDTO implements Serializable {
     private String lastName;
     private String phoneNumberPrefix;
     private String phoneNumber;
+    private String email;
     private String note;
     private UUID companyId;
     private String companyName;
@@ -34,13 +35,15 @@ public class CustomerDetailsDTO implements Serializable {
                               String lastName,
                               String phoneNumberPrefix,
                               String phoneNumber,
-                              String note) {
+                              String note,
+                              String email) {
         this.userId = userId;
         this.firstName = firstName;
         this.lastName = lastName;
         this.phoneNumberPrefix = phoneNumberPrefix;
         this.phoneNumber = phoneNumber;
         this.note = note;
+        this.email = email;
     }
 
     public CustomerDetailsDTO(UUID userId,
@@ -51,7 +54,8 @@ public class CustomerDetailsDTO implements Serializable {
                               String note,
                               UUID companyId,
                               String companyName,
-                              String taxNumber) {
+                              String taxNumber,
+                              String email) {
         this.userId = userId;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -61,6 +65,7 @@ public class CustomerDetailsDTO implements Serializable {
         this.companyId = companyId;
         this.companyName = companyName;
         this.taxNumber = taxNumber;
+        this.email = email;
     }
 
     public CustomerDetailsDTO(UUID userId,
@@ -74,7 +79,8 @@ public class CustomerDetailsDTO implements Serializable {
                               String postCode,
                               String city,
                               UUID countryId,
-                              String countryName) {
+                              String countryName,
+                              String email) {
         this.userId = userId;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -87,6 +93,7 @@ public class CustomerDetailsDTO implements Serializable {
         this.city = city;
         this.countryId = countryId;
         this.countryName = countryName;
+        this.email = email;
     }
 
     public static CustomerDetailsDTO convertFromEntity(User user) {
@@ -109,7 +116,8 @@ public class CustomerDetailsDTO implements Serializable {
                     user.getLastName(),
                     user.getPhoneNumberPrefix(),
                     user.getPhoneNumber(),
-                    user.getNote()
+                    user.getNote(),
+                    user.getEmail()
             );
         else if (isCompanyPresent && !isAddressPresent)
             return new CustomerDetailsDTO(
@@ -121,7 +129,8 @@ public class CustomerDetailsDTO implements Serializable {
                     user.getNote(),
                     company.getCompanyId(),
                     company.getCompanyName(),
-                    company.getTaxNumber()
+                    company.getTaxNumber(),
+                    user.getEmail()
             );
         else if (!isCompanyPresent)
             return new CustomerDetailsDTO(
@@ -136,7 +145,8 @@ public class CustomerDetailsDTO implements Serializable {
                     address.getPostCode(),
                     address.getCity(),
                     country.getCountryId(),
-                    country.getCountryName()
+                    country.getCountryName(),
+                    user.getEmail()
             );
         else return new CustomerDetailsDTO(
                 user.getUserId(),
@@ -144,6 +154,7 @@ public class CustomerDetailsDTO implements Serializable {
                 user.getLastName(),
                 user.getPhoneNumberPrefix(),
                 user.getPhoneNumber(),
+                user.getEmail(),
                 user.getNote(),
                 company.getCompanyId(),
                 company.getCompanyName(),

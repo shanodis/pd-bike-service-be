@@ -26,4 +26,6 @@ public class CustomerRegisterDTO implements Serializable {
 
     @NotNull
     private String phoneNumber;
+
+    private String note;
 }

@@ -17,6 +17,7 @@ public class SimpleEmployeeDTO implements Serializable {
     private final String lastName;
     private final String phoneNumberPrefix;
     private final String phoneNumber;
+    private final String note;
 
     public static SimpleEmployeeDTO convertFromEntity(User user) {
         return new SimpleEmployeeDTO(
@@ -25,7 +26,8 @@ public class SimpleEmployeeDTO implements Serializable {
                 user.getFirstName(),
                 user.getLastName(),
                 user.getPhoneNumberPrefix(),
-                user.getPhoneNumber()
+                user.getPhoneNumber(),
+                user.getNote()
         );
     }
 }

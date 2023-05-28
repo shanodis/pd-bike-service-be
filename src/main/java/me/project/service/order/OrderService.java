@@ -16,6 +16,7 @@ import me.project.repository.UserRepository;
 import me.project.search.SearchCriteria;
 import me.project.search.specificator.Specifications;
 import me.project.service.order.part.IOrderPartService;
+import me.project.service.order.status.OrderStatusService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -30,6 +31,7 @@ import java.util.UUID;
 public class OrderService implements IOrderService {
     private final OrderRepository orderRepository;
     private final IOrderPartService orderPartService;
+    private final OrderStatusService orderStatusService;
     private final BikeRepository bikeRepository;
     private final UserRepository userRepository;
 
@@ -53,9 +55,14 @@ public class OrderService implements IOrderService {
                                                               String phrase,
                                                               LocalDateTime orderDateFrom,
                                                               LocalDateTime orderDateTo,
-                                                              UUID orderStatusId) {
+                                                              UUID orderStatusId,
+                                                              UUID userId) {
 
         Specifications<Order> orderSpecifications = new Specifications<>();
+
+        if(userId != null)
+            orderSpecifications
+                    .and(new SearchCriteria("user.userId", userId, SearchOperation.EQUAL_JOIN));
 
         if (orderStatusId != null)
             orderSpecifications
@@ -76,7 +83,7 @@ public class OrderService implements IOrderService {
                     .or(new SearchCriteria("user.firstName", phrase.trim(), SearchOperation.MATCH_JOIN))
                     .or(new SearchCriteria("user.lastName", phrase.trim(), SearchOperation.MATCH_JOIN))
                     // TODO poprawić jak jest pusta lista wewnętrzna
-                    .or(new SearchCriteria("orderServices.service.serviceName", phrase.trim(), SearchOperation.MATCH_JOIN_LIST_OBJECT))
+//                    .or(new SearchCriteria("orderServices.service.serviceName", phrase.trim(), SearchOperation.MATCH_JOIN_LIST_OBJECT))
                     ;
 
         if (!orderSpecifications.isEmpty())
@@ -158,6 +165,25 @@ public class OrderService implements IOrderService {
         );
 
         order.setOrderParts(orderParts);
+
+        orderRepository.save(order);
+    }
+
+    public void updateOrderService(UUID orderId, UUID orderStatusId) {
+
+        Order order = getById(orderId);
+
+        order.setOrderStatus(orderStatusService.getStatusById(orderStatusId));
+
+        orderRepository.save(order);
+
+    }
+
+    public void updateOrderNote(UUID orderId, String note) {
+
+        Order order = getById(orderId);
+
+        order.setNote(note);
 
         orderRepository.save(order);
     }

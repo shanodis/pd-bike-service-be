@@ -43,9 +43,16 @@ public class OrderController {
             @RequestParam(required = false) Integer pageLimit,
             @RequestParam(required = false) String sortDir,
             @RequestParam(required = false, defaultValue = "createdOn") String sortBy,
-            @RequestParam(required = false) String phrase
+            @RequestParam(required = false) String phrase,
+            @RequestParam(required = false) UUID userId
     ) {
-        return orderService.getOrders(new PageRequestDTO(page, pageLimit, sortDir, sortBy), phrase, orderDateFrom, orderDateTo, orderStatusId);
+        return orderService.getOrders(
+                new PageRequestDTO(page, pageLimit, sortDir, sortBy),
+                phrase,
+                orderDateFrom,
+                orderDateTo,
+                orderStatusId,
+                userId);
     }
 
     @PostMapping()
@@ -66,6 +73,16 @@ public class OrderController {
     @PutMapping("{orderId}/order-parts/{orderPartId}/{newOrderPartId}")
     public void updateOrderPartOfOrder(@PathVariable UUID orderId, @PathVariable UUID orderPartId, @PathVariable UUID newOrderPartId) {
         orderService.updateOrdersOrderPart(orderId, orderPartId, newOrderPartId);
+    }
+
+    @PatchMapping("{orderId}/order-status/{orderStatusId}")
+    public void updateOrderStatus(@PathVariable UUID orderId,@PathVariable UUID orderStatusId){
+        orderService.updateOrderService(orderId, orderStatusId);
+    }
+
+    @PatchMapping("{orderId}/order-note")
+    public void updateOrderNote(@PathVariable UUID orderId,@RequestBody String note){
+        orderService.updateOrderNote(orderId, note);
     }
 
     @DeleteMapping("{orderId}/order-parts/{orderPartId}")

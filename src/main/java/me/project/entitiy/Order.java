@@ -32,6 +32,8 @@ public class Order {
     private UUID orderId;
 
     private String note;
+    //TODO add logic for payment and checking
+    private Boolean isPayed;
 
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
     private LocalDateTime createdOn;
