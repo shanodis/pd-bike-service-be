@@ -30,7 +30,7 @@ public class EmailService {
             helper.setText(email, true);
             helper.setTo(to);
             helper.setSubject(subject);
-            //helper.setFrom("noreply.future.bank@gmail.com");
+            helper.setFrom("bike-no-reply@op.pl");
             mailSender.send(mimeMessage);
         } catch (MessagingException e) {
             LOGGER.error("failed to send email", e);

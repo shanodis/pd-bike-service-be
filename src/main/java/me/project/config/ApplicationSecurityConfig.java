@@ -1,6 +1,6 @@
 package me.project.config;
 
-import me.project.auth.UserService;
+import me.project.service.user.UserService;
 import me.project.auth.formLogin.FormLoginUsernameAndPasswordAuthenticationFilter;
 import me.project.auth.jwt.JwtTokenVerifier;
 import com.ulisesbocchio.jasyptspringboot.annotation.EnableEncryptableProperties;
@@ -16,8 +16,6 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
-
-import static me.project.auth.enums.AppUserRole.*;
 
 @Configuration
 @EnableEncryptableProperties

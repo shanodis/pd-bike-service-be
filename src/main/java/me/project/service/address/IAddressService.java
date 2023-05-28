@@ -1,6 +1,6 @@
 package me.project.service.address;
 
-import me.project.auth.User;
+import me.project.entitiy.User;
 import me.project.dtos.request.address.AddressUpdateDTO;
 import me.project.entitiy.Address;
 

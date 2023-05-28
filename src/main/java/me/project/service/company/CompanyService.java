@@ -1,6 +1,6 @@
 package me.project.service.company;
 
-import me.project.auth.User;
+import me.project.entitiy.User;
 import me.project.dtos.request.company.CompanyCreateDTO;
 import me.project.dtos.request.company.CompanyUpdateDTO;
 import me.project.entitiy.Company;

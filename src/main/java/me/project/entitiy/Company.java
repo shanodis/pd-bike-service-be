@@ -1,6 +1,5 @@
 package me.project.entitiy;
 
-import me.project.auth.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

@@ -1,9 +1,6 @@
 package me.project.dtos.request.user;
 
-import me.project.auth.User;
-import me.project.auth.enums.AppUserRole;
-import me.project.entitiy.Address;
-import me.project.entitiy.Company;
+import me.project.entitiy.User;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

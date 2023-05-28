@@ -1,6 +1,6 @@
 package me.project.enums;
 
-import me.project.auth.User;
+import me.project.entitiy.User;
 import me.project.search.SearchCriteria;
 
 import javax.persistence.criteria.CriteriaBuilder;

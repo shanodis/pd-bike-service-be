@@ -1,6 +1,6 @@
 package me.project.dtos.request.company;
 
-import me.project.auth.User;
+import me.project.entitiy.User;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

@@ -25,7 +25,7 @@ public class CountryController {
         return countryService.getAllCountries();
     }
 
-    @GetMapping("without-addresses")
+    @GetMapping("countries")
     public List<CountryWithoutAddressesDTO> getAllCountriesWithoutAddresses() {
         return countryService.getAllCountriesWithoutAddresses();
     }

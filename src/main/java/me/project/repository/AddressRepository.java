@@ -1,6 +1,6 @@
 package me.project.repository;
 
-import me.project.auth.User;
+import me.project.entitiy.User;
 import me.project.entitiy.Address;
 import me.project.entitiy.Country;
 import org.springframework.data.jpa.repository.JpaRepository;

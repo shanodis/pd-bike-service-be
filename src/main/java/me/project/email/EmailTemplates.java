@@ -1,5 +1,6 @@
 package me.project.email;
 
+import me.project.entitiy.User;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.stereotype.Service;
@@ -8,7 +9,7 @@ import org.springframework.stereotype.Service;
 @Getter
 @Service
 public class EmailTemplates {
-    public String emailTemplateForWelcome(String login, String password) {
+    public String emailTemplateForWelcome(User user) {
         return "<!DOCTYPE html>\n" +
                 "\n" +
                 "<html lang=\"en\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:v=\"urn:schemas-microsoft-com:vml\">\n" +
@@ -97,7 +98,7 @@ public class EmailTemplates {
                 "                                            <td style=\"padding-bottom:15px;padding-top:10px;\">\n" +
                 "                                                <div style=\"font-family: sans-serif\">\n" +
                 "                                                    <div style=\"font-size: 14px; mso-line-height-alt: 16.8px; color: #f7f7f7; line-height: 1.2; font-family: Varela Round, Trebuchet MS, Helvetica, sans-serif;\">\n" +
-                "                                                        <p style=\"margin: 0; font-size: 14px; text-align: center;\"><span style=\"font-size:30px;\">New Login Credentials</span></p>\n" +
+                "                                                        <p style=\"margin: 0; font-size: 14px; text-align: center;\"><span style=\"font-size:30px;\">Welcome " + user.getFirstName() + " " + user.getLastName() + "</span></p>\n" +
                 "                                                    </div>\n" +
                 "                                                </div>\n" +
                 "                                            </td>\n" +
@@ -108,8 +109,9 @@ public class EmailTemplates {
                 "                                            <td>\n" +
                 "                                                <div style=\"font-family: sans-serif\">\n" +
                 "                                                    <div style=\"font-size: 12px; mso-line-height-alt: 18px; color: #f7f7f7; line-height: 1.5; font-family: Varela Round, Trebuchet MS, Helvetica, sans-serif;\">\n" +
-                "                                                        <p style=\"margin: 0; font-size: 14px; text-align: center; mso-line-height-alt: 21px;\"><span style=\"font-size:14px;\">Login:" + login + "</span></p>\n" +
-                "                                                        <p style=\"margin: 0; font-size: 14px; text-align: center; mso-line-height-alt: 21px;\"><span style=\"font-size:14px;\">Password:" + password + "</span></p>\n" +
+                "                                                        <p style=\"margin: 0; font-size: 14px; text-align: center;\"><span style=\"font-size:26px;\">To activate your account you have to set up a password</span></p>\n" +
+                "                                                        <p style=\"margin: 0; font-size: 14px; text-align: center; mso-line-height-alt: 21px;\"><span style=\"font-size:14px;\">Activate account link:<a href=https://bike-service-fe.herokuapp.com/set-password?userId=" + user.getUserId() + ">Click Here</a></span></p>\n" +
+                "                                                        <p style=\"margin: 0; font-size: 14px; text-align: center; mso-line-height-alt: 21px;\"><span style=\"font-size:14px;\">Secondary link:<a href=https://localhost:3000/set-password?userId=" + user.getUserId() + ">Click Here</a></span></p>\n" +
                 "                                                    </div>\n" +
                 "                                                </div>\n" +
                 "                                            </td>\n" +
@@ -133,7 +135,7 @@ public class EmailTemplates {
                 "                                            <td style=\"padding-bottom:40px;padding-left:25px;padding-right:25px;padding-top:10px;\">\n" +
                 "                                                <div style=\"font-family: sans-serif\">\n" +
                 "                                                    <div style=\"font-size: 14px; mso-line-height-alt: 21px; color: #f7f7f7; line-height: 1.5; font-family: Varela Round, Trebuchet MS, Helvetica, sans-serif;\">\n" +
-                "                                                        <p style=\"margin: 0; font-size: 14px; text-align: center;\"><strong>Didn't request a password reset?</strong></p>\n" +
+                "                                                        <p style=\"margin: 0; font-size: 14px; text-align: center;\"><strong>Didn't created created an account?</strong></p>\n" +
                 "                                                        <p style=\"margin: 0; font-size: 14px; text-align: center;\">Please contact us by phone 000-600-944 .</p>\n" +
                 "                                                    </div>\n" +
                 "                                                </div>\n" +
