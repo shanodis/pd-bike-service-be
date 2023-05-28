@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @RestController
@@ -29,11 +30,10 @@ public class DictionaryController {
     private final IOrderStatusService orderStatus;
     private final IServiceService serviceService;
 
-    //TODO add userId parameter
     @GetMapping("bikes")
     public PageResponse<DictionaryResponseDTO> getBikes(@RequestParam Integer page, @RequestParam Integer pageLimit,
                                                         @RequestParam String sortDir, @RequestParam String sortBy,
-                                                        @RequestParam(required = false) UUID userId) {
+                                                        @RequestParam(required = false, defaultValue = "") UUID userId) {
         return bikeService.getBikesDictionary(new PageRequestDTO(page, pageLimit, sortDir, sortBy), userId);
     }
 

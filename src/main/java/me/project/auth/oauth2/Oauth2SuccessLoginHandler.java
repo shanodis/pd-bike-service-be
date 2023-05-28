@@ -16,8 +16,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.time.LocalDate;
 import java.util.Date;
+
+import static me.project.enums.JwtExpire.ACCESS_TOKEN;
+import static me.project.enums.JwtExpire.REFRESH_TOKEN;
 
 
 public class Oauth2SuccessLoginHandler extends SimpleUrlAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
@@ -43,7 +45,9 @@ public class Oauth2SuccessLoginHandler extends SimpleUrlAuthenticationSuccessHan
                     oauthNames[1].trim(),
                     AppUserRole.CLIENT
             );
+
             httpServletResponse.setStatus(HttpStatus.CREATED.value());
+
         } else {
             user = userService.getUser(oauthUser.getEmail());
             httpServletResponse.setStatus(HttpStatus.OK.value());
@@ -57,21 +61,21 @@ public class Oauth2SuccessLoginHandler extends SimpleUrlAuthenticationSuccessHan
                     .claim("authorities", user.getAuthorities())
                     .claim("userId", user.getUserId())
                     .setIssuedAt(new Date())
-                    .setExpiration(new Date(System.currentTimeMillis() + 2 * 60 * 1000))
+                    .setExpiration(new Date(System.currentTimeMillis() + ACCESS_TOKEN.getAmount()))
                     .signWith(Keys.hmacShaKeyFor(key.getBytes(StandardCharsets.UTF_8)))
                     .compact();
 
             String refreshToken = Jwts.builder()
                     .setSubject(authentication.getName())
                     .claim("userId", user.getUserId())
-                    .setExpiration(new Date(System.currentTimeMillis() + 12 * 60 * 60 * 1000))
+                    .setExpiration(new Date(System.currentTimeMillis() + REFRESH_TOKEN.getAmount()))
                     .signWith(Keys.hmacShaKeyFor(key.getBytes(StandardCharsets.UTF_8)))
                     .compact();
 
             httpServletResponse.setHeader("Authorization", "Bearer " + accessToken);
             httpServletResponse.setHeader("Authorization-Refresh", "Bearer " + refreshToken);
 
-            String targetUrl = UriComponentsBuilder.fromHttpUrl(httpServletRequest.getHeader("Referer"))
+            String targetUrl = UriComponentsBuilder.fromHttpUrl("http://localhost:3000")
                     .queryParam("accessToken", "Bearer " + accessToken)
                     .queryParam("refreshToken", "Bearer " + refreshToken)
                     .queryParam("status", httpServletResponse.getStatus())
@@ -80,8 +84,10 @@ public class Oauth2SuccessLoginHandler extends SimpleUrlAuthenticationSuccessHan
             getRedirectStrategy().sendRedirect(httpServletRequest, httpServletResponse, targetUrl);
 
         } catch (Exception e) {
+
             if (e.equals(new IOException(e.getMessage())))
                 throw new IOException(e.getMessage());
+
             else throw new ServletException(e.getMessage());
         }
 

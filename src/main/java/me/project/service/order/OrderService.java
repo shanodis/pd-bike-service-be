@@ -15,15 +15,12 @@ import me.project.repository.OrderRepository;
 import me.project.repository.UserRepository;
 import me.project.search.SearchCriteria;
 import me.project.search.specificator.Specifications;
-import me.project.service.bike.BikeService;
-import me.project.service.bike.IBikeService;
 import me.project.service.order.part.IOrderPartService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.UUID;
@@ -41,7 +38,7 @@ public class OrderService implements IOrderService {
     }
 
     public Order getLatestByUser(User user) {
-        return orderRepository.findByUserOrderByCreatedOnDesc(user);
+        return orderRepository.findFirstByUserOrderByCreatedOnDesc(user);
     }
 
     public Order getById(UUID orderId) {
@@ -52,21 +49,41 @@ public class OrderService implements IOrderService {
     }
 
 
-    public PageResponse<OrderPaginationResponseDTO> getOrders(PageRequestDTO requestDTO, String phrase) {
+    public PageResponse<OrderPaginationResponseDTO> getOrders(PageRequestDTO requestDTO,
+                                                              String phrase,
+                                                              LocalDateTime orderDateFrom,
+                                                              LocalDateTime orderDateTo,
+                                                              UUID orderStatusId) {
 
-        Specifications<Order> orderSpecifications  = new Specifications<>();
+        Specifications<Order> orderSpecifications = new Specifications<>();
 
-        if (phrase != null && !phrase.isEmpty()) {
+        if (orderStatusId != null)
             orderSpecifications
-                    .or(new SearchCriteria("note" , phrase.trim(), SearchOperation.MATCH))
-                    .or(new SearchCriteria("bikeName", phrase.trim(), SearchOperation.MATCH_JOIN_BIKE));
+                    .and(new SearchCriteria("orderStatus.orderStatusId", orderStatusId, SearchOperation.EQUAL_JOIN));
 
+        if (orderDateFrom != null)
+            orderSpecifications
+                    .and(new SearchCriteria("createdOn", orderDateFrom, SearchOperation.GREATER_THAN_EQUAL_DATE));
+
+        if (orderDateTo != null)
+            orderSpecifications
+                    .and(new SearchCriteria("createdOn", orderDateTo, SearchOperation.LESS_THAN_EQUAL_DATE));
+
+        if (phrase != null && !phrase.isEmpty())
+            orderSpecifications
+                    .or(new SearchCriteria("note", phrase.trim(), SearchOperation.MATCH))
+                    .or(new SearchCriteria("bike.bikeName", phrase.trim(), SearchOperation.MATCH_JOIN))
+                    .or(new SearchCriteria("user.firstName", phrase.trim(), SearchOperation.MATCH_JOIN))
+                    .or(new SearchCriteria("user.lastName", phrase.trim(), SearchOperation.MATCH_JOIN))
+                    // TODO poprawić jak jest pusta lista wewnętrzna
+                    .or(new SearchCriteria("orderServices.service.serviceName", phrase.trim(), SearchOperation.MATCH_JOIN_LIST_OBJECT))
+                    ;
+
+        if (!orderSpecifications.isEmpty())
             return new PageResponse<>(
                     orderRepository.findAll(orderSpecifications, requestDTO.getRequest(Order.class))
                             .map(OrderPaginationResponseDTO::convertFromEntity)
             );
-
-        }
 
         return new PageResponse<>(
                 orderRepository.findAll(requestDTO.getRequest(Order.class))
@@ -77,44 +94,38 @@ public class OrderService implements IOrderService {
 
     public UUID createOrder(OrderCreateRequestDTO request) {
 
-        UUID bikeId = request.getBikeId();
+        Bike bike;
 
-        if (request.getBikeId() == null) {
-            Bike bike = new Bike();
-
-            bike.setBikeName(request.getBikeName());
-            bike.setBikeModel(request.getBikeModel());
-            bike.setBikeMake(request.getBikeMake());
-            bike.setYearOfProduction(request.getYearOfProduction());
-
-            bikeRepository.save(bike);
-
-            bikeId = bike.getBikeId();
-
-        } else {
-            bikeRepository.findById(request.getBikeId()).orElseThrow(
-                    () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Bike not found")
-            );
-        }
-
-        userRepository.findById(request.getUserId()).orElseThrow(
+        User user = userRepository.findById(request.getUserId()).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found")
         );
 
-        Order order = new Order();
+        if (request.getBikeId() == null) {
 
-        {
-            Bike tmp = new Bike();
-            tmp.setBikeId(bikeId);
-            order.setBike(tmp);
-        }
-        {
-            User tmp = new User();
-            tmp.setUserId(request.getUserId());
-            order.setUser(tmp);
-        }
-        order.setNote(request.getNote().trim());
-        order.setCreatedOn(LocalDateTime.now());
+            bike = new Bike(
+                    user,
+                    request.getBikeName().trim(),
+                    request.getBikeMake().trim(),
+                    request.getBikeModel().trim(),
+                    request.getSerialNumber(),
+                    request.getYearOfProduction()
+            );
+
+            bikeRepository.save(bike);
+
+        } else
+            bike = bikeRepository.findById(request.getBikeId()).orElseThrow(
+                    () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Bike not found")
+            );
+
+
+        Order order = new Order(
+                request.getNote().trim(),
+                LocalDateTime.now(),
+                bike,
+                user,
+                Status.TODO.getOrderStatus()
+        );
 
         orderRepository.save(order);
 
@@ -123,7 +134,7 @@ public class OrderService implements IOrderService {
     }
 
 
-    public void addOrderPartToOrder(UUID orderId, UUID orderPartId){
+    public void addOrderPartToOrder(UUID orderId, UUID orderPartId) {
         Order order = getById(orderId);
 
         ArrayList<OrderPart> orderParts = new ArrayList<>(getById(orderId).getOrderParts());
@@ -151,7 +162,7 @@ public class OrderService implements IOrderService {
         orderRepository.save(order);
     }
 
-    public void deleteOrdersOrderPart(UUID orderId, UUID orderPartId){
+    public void deleteOrdersOrderPart(UUID orderId, UUID orderPartId) {
         Order order = getById(orderId);
 
         ArrayList<OrderPart> orderParts = new ArrayList<>(getById(orderId).getOrderParts());

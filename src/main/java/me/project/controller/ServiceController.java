@@ -1,6 +1,7 @@
 package me.project.controller;
 
 import me.project.dtos.request.PageRequestDTO;
+import me.project.dtos.request.service.CreateServiceDTO;
 import me.project.dtos.response.page.PageResponse;
 import me.project.dtos.response.services.ServiceDTO;
 import me.project.service.service.IServiceService;
@@ -27,5 +28,8 @@ public class ServiceController {
 
         return serviceService.getAllServices(new PageRequestDTO(page, pageLimit, sortDir, sortBy), phrase);
     }
+
+    @PostMapping
+    public UUID createService(@RequestBody CreateServiceDTO serviceDTO){return serviceService.createService(serviceDTO);}
 
 }

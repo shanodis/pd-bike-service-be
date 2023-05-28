@@ -148,6 +148,11 @@
 			<version>1.0</version>
 			<scope>compile</scope>
 		</dependency>
+		<dependency>
+			<groupId>com.amazonaws</groupId>
+			<artifactId>aws-java-sdk</artifactId>
+			<version>1.11.163</version>
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -156,7 +161,7 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 				<configuration>
-					<mainClass>me.project.PdBikeServiceBeApplication</mainClass>
+					<mainClass>com.bikend.SpringBootApplication</mainClass>
 					<excludes>
 						<exclude>
 							<groupId>org.projectlombok</groupId>
@@ -203,7 +208,7 @@
 						<manifest>
 							<addClasspath>true</addClasspath>
 							<classpathPrefix>lib/</classpathPrefix>
-							<mainClass>me.project.PdBikeServiceBeApplication</mainClass>
+							<mainClass>com.bikend.SpringBootApplication</mainClass>
 						</manifest>
 					</archive>
 				</configuration>

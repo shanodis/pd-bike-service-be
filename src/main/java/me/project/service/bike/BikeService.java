@@ -29,11 +29,12 @@ import java.util.stream.Collectors;
 @Service
 @AllArgsConstructor
 public class BikeService implements IBikeService {
-    private BikeRepository bikeRepository;
+    private final BikeRepository bikeRepository;
     private final IUserService userService;
 
     @Autowired
-    public BikeService(@Lazy IUserService userService) {
+    public BikeService(@Lazy IUserService userService, BikeRepository bikeRepository) {
+        this.bikeRepository = bikeRepository;
         this.userService = userService;
     }
 
@@ -52,8 +53,10 @@ public class BikeService implements IBikeService {
 
     public List<SimpleBikeDTO> getBikesByUserAndPhrase(UUID userId, String phrase) {
 
-        Specifications<Bike> bikeSpecifications = new Specifications<Bike>()
-                .and(new SearchCriteria("user", userService.getUser(userId), SearchOperation.EQUAL));
+        Specifications<Bike> bikeSpecifications = new Specifications<>();
+
+        if(userId != null)
+            bikeSpecifications.and(new SearchCriteria("user", userService.getUser(userId), SearchOperation.EQUAL));
 
         if (phrase != null)
             bikeSpecifications

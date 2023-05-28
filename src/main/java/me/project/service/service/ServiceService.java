@@ -1,6 +1,7 @@
 package me.project.service.service;
 
 import me.project.dtos.request.PageRequestDTO;
+import me.project.dtos.request.service.CreateServiceDTO;
 import me.project.dtos.response.page.PageResponse;
 import me.project.dtos.response.services.ServiceDTO;
 import me.project.repository.ServiceRepository;
@@ -9,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -16,7 +18,7 @@ import java.util.UUID;
 public class ServiceService implements IServiceService {
     private final ServiceRepository serviceRepository;
 
-    private me.project.entitiy.Service findServiceById(UUID serviceId){
+    private me.project.entitiy.Service findServiceById(UUID serviceId) {
         return serviceRepository.findById(serviceId).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Service with given id " + serviceId + " not found")
         );
@@ -43,5 +45,26 @@ public class ServiceService implements IServiceService {
                 serviceRepository.findAllByServiceName(phrase, pageRequestDTO.getRequest(me.project.entitiy.Service.class))
                         .map(ServiceDTO::convertFromEntity)
         );
+    }
+
+    public UUID createService(CreateServiceDTO createServiceDTO) {
+
+        Optional<me.project.entitiy.Service> service = serviceRepository.findByServiceName(createServiceDTO.getServiceName());
+
+        if (service.isPresent())
+            if (service.get().getServicePrice().equals(createServiceDTO.getServicePrice()))
+                throw new ResponseStatusException(
+                        HttpStatus.CONFLICT,
+                        String.format("Service %s already exists with %.2f price",
+                                createServiceDTO.getServiceName(),
+                                createServiceDTO.getServicePrice()
+                        )
+                );
+
+        return serviceRepository.save(new me.project.entitiy.Service(
+                createServiceDTO.getServiceName(),
+                createServiceDTO.getServicePrice()
+        )).getServiceId();
+
     }
 }

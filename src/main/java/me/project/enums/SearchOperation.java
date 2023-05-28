@@ -4,10 +4,7 @@ import me.project.entitiy.Bike;
 import me.project.entitiy.User;
 import me.project.search.SearchCriteria;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
+import javax.persistence.criteria.*;
 import java.time.LocalDateTime;
 
 public enum SearchOperation {
@@ -69,6 +66,21 @@ public enum SearchOperation {
             );
         }
     },
+    EQUAL_JOIN {
+        @Override
+        public <T> Predicate getPredicate(Root<T> root, SearchCriteria criteria, CriteriaBuilder builder) {
+            String[] memberAndField = criteria.getKey().split("\\.", 2);
+
+            Join<T, ?> join = root.join(memberAndField[0]);
+
+            return builder.equal(
+                    join.get(
+                            memberAndField[1]
+                    ),
+                    criteria.getValue()
+            );
+        }
+    },
 
     EQUAL_JOIN_USER {
         @Override
@@ -83,15 +95,58 @@ public enum SearchOperation {
         }
     },
 
+    MATCH_JOIN {
+        @Override
+        public <T> Predicate getPredicate(Root<T> root, SearchCriteria criteria, CriteriaBuilder builder) {
+            String[] memberAndField = criteria.getKey().split("\\.", 2);
+
+            Join<T, ?> join = root.join(memberAndField[0]);
+
+            return builder.like(
+                    builder.lower(join.get(memberAndField[1]))
+                    , "%" + criteria.getValue().toString().toLowerCase() + "%"
+            );
+        }
+    },
+    MATCH_JOIN_LIST {
+        @Override
+        public <T> Predicate getPredicate(Root<T> root, SearchCriteria criteria, CriteriaBuilder builder) {
+            String[] memberAndField = criteria.getKey().split("\\.", 2);
+
+            ListJoin<T, ?> join = root.joinList(memberAndField[0]);
+
+            return builder.like(
+                    builder.lower(join.get(memberAndField[1]))
+                    , "%" + criteria.getValue().toString().toLowerCase() + "%"
+            );
+
+        }
+    },
+    MATCH_JOIN_LIST_OBJECT{
+        @Override
+        public <T> Predicate getPredicate(Root<T> root, SearchCriteria criteria, CriteriaBuilder builder) {
+            String[] memberAndField = criteria.getKey().split("\\.", 3);
+
+            ListJoin<T, ?> join = root.joinList(memberAndField[0]);
+
+            Join<?, ?> secondJoin = join.join(memberAndField[1]);
+
+            return builder.like(
+                    builder.lower(secondJoin.get(memberAndField[2]))
+                    , "%" + criteria.getValue().toString().toLowerCase() + "%"
+            );
+        }
+    },
+
     MATCH_JOIN_BIKE {
-      @Override
-      public <T> Predicate getPredicate(Root<T> root, SearchCriteria criteria, CriteriaBuilder builder) {
-          Join<T, Bike> bikeJoin = root.join("bike");
-          return builder.like(
-                  builder.lower(bikeJoin.get(criteria.getKey()))
-                  , "%" + criteria.getValue().toString().toLowerCase() + "%"
-          );
-      }
+        @Override
+        public <T> Predicate getPredicate(Root<T> root, SearchCriteria criteria, CriteriaBuilder builder) {
+            Join<T, Bike> bikeJoin = root.join("bike");
+            return builder.like(
+                    builder.lower(bikeJoin.get(criteria.getKey()))
+                    , "%" + criteria.getValue().toString().toLowerCase() + "%"
+            );
+        }
     },
 
     MATCH {

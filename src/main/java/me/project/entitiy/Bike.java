@@ -49,4 +49,18 @@ public class Bike {
     @OneToMany(mappedBy = "bike",fetch = FetchType.LAZY)
     @JsonManagedReference
     private List<Order> orders;
+
+    public Bike(User user,
+                String bikeName,
+                String bikeMake,
+                String bikeModel,
+                String serialNumber,
+                @Nullable Integer yearOfProduction) {
+        this.user = user;
+        this.bikeName = bikeName;
+        this.bikeMake = bikeMake;
+        this.bikeModel = bikeModel;
+        this.serialNumber = serialNumber;
+        this.yearOfProduction = yearOfProduction;
+    }
 }

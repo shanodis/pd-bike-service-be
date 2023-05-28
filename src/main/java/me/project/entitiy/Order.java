@@ -58,4 +58,16 @@ public class Order {
     @OneToMany(mappedBy = "order",fetch = FetchType.LAZY)
     @JsonManagedReference
     private List<OrderService> orderServices;
+
+    public Order(String note,
+                 LocalDateTime createdOn,
+                 Bike bike,
+                 User user,
+                 OrderStatus orderStatus) {
+        this.note = note;
+        this.createdOn = createdOn;
+        this.bike = bike;
+        this.user = user;
+        this.orderStatus = orderStatus;
+    }
 }

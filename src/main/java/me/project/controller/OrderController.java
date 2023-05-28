@@ -11,8 +11,10 @@ import me.project.dtos.response.page.PageResponse;
 import me.project.service.order.IOrderService;
 import me.project.service.order.part.IOrderPartService;
 import lombok.AllArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @RestController
@@ -34,13 +36,16 @@ public class OrderController {
 
     @GetMapping()
     public PageResponse<OrderPaginationResponseDTO> getOrders(
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX") LocalDateTime orderDateFrom,
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX") LocalDateTime orderDateTo,
+            @RequestParam(required = false, defaultValue = "") UUID orderStatusId,
             @RequestParam(required = false) Integer page,
             @RequestParam(required = false) Integer pageLimit,
             @RequestParam(required = false) String sortDir,
             @RequestParam(required = false, defaultValue = "createdOn") String sortBy,
             @RequestParam(required = false) String phrase
     ) {
-        return orderService.getOrders(new PageRequestDTO(page, pageLimit, sortDir, sortBy), phrase);
+        return orderService.getOrders(new PageRequestDTO(page, pageLimit, sortDir, sortBy), phrase, orderDateFrom, orderDateTo, orderStatusId);
     }
 
     @PostMapping()

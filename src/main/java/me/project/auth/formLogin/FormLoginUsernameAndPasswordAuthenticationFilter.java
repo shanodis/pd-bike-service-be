@@ -21,6 +21,9 @@ import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.UUID;
 
+import static me.project.enums.JwtExpire.ACCESS_TOKEN;
+import static me.project.enums.JwtExpire.REFRESH_TOKEN;
+
 @AllArgsConstructor
 @Getter
 public class FormLoginUsernameAndPasswordAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
@@ -60,14 +63,14 @@ public class FormLoginUsernameAndPasswordAuthenticationFilter extends UsernamePa
                     .claim("authorities", authResult.getAuthorities())
                     .claim("userId", userId)
                     .setIssuedAt(new Date())
-                    .setExpiration(new Date(System.currentTimeMillis() + 2 * 60 * 1000))
+                    .setExpiration(new Date(System.currentTimeMillis() + ACCESS_TOKEN.getAmount()))
                     .signWith(Keys.hmacShaKeyFor(key.getBytes(StandardCharsets.UTF_8)))
                     .compact();
 
             String refreshToken = Jwts.builder()
                     .setSubject(authResult.getName())
                     .claim("userId", userId)
-                    .setExpiration(new Date(System.currentTimeMillis() + 12 * 60 * 60 * 1000))
+                    .setExpiration(new Date(System.currentTimeMillis() + REFRESH_TOKEN.getAmount()))
                     .signWith(Keys.hmacShaKeyFor(key.getBytes(StandardCharsets.UTF_8)))
                     .compact();
 

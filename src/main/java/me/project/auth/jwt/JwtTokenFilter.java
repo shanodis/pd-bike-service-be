@@ -61,7 +61,6 @@ public class JwtTokenFilter extends OncePerRequestFilter {
             } catch (Exception e) {
                 if (e.getClass().equals(ExpiredJwtException.class))
                     response.setStatus(HttpStatus.NOT_ACCEPTABLE.value());
-                    //throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, String.format("Token %s has expired, please refresh access token", token));
                 else
                     throw new IllegalStateException(String.format("Token %s cannot be trusted", token));
             }

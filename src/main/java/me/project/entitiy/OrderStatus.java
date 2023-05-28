@@ -18,16 +18,19 @@ import java.util.UUID;
 @AllArgsConstructor
 public class OrderStatus {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(
             nullable = false,
             updatable = false
     )
     private UUID orderStatusId;
     private String orderStatusName;
-    private Integer orderSort;
 
     @OneToMany(mappedBy = "orderStatus",fetch = FetchType.LAZY)
     @JsonManagedReference
     private List<Order> orders;
+
+    public OrderStatus(UUID orderStatusId, String orderStatusName) {
+        this.orderStatusId = orderStatusId;
+        this.orderStatusName = orderStatusName;
+    }
 }

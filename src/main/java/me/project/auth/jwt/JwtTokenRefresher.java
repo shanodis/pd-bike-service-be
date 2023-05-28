@@ -8,6 +8,7 @@ import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.security.SignatureException;
 import lombok.AllArgsConstructor;
 import org.assertj.core.util.Strings;
 import org.springframework.http.HttpStatus;
@@ -19,6 +20,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.UUID;
+
+import static me.project.enums.JwtExpire.ACCESS_TOKEN;
 
 @Service
 @AllArgsConstructor
@@ -42,7 +45,9 @@ public class JwtTokenRefresher {
 
                 Claims body = claimsJws.getBody();
 
-                UUID userId = body.get("userId", UUID.class);
+                String UID = body.get("userId", String.class);
+
+                UUID userId = UUID.fromString(UID);
 
                 User user = userService.getUser(userId);
 
@@ -51,21 +56,27 @@ public class JwtTokenRefresher {
                         .claim("authorities", user.getAuthorities())
                         .claim("userId", userId)
                         .setIssuedAt(new Date())
-                        .setExpiration(new Date(System.currentTimeMillis() + 2 * 60 * 1000))
+                        .setExpiration(new Date(System.currentTimeMillis() + ACCESS_TOKEN.getAmount()))
                         .signWith(Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8)))
                         .compact();
 
                 response.addHeader("Authorization", "Bearer " + accessToken);
+                response.setStatus(HttpStatus.OK.value());
 
             } catch (Exception e) {
+
                 if (e.getClass().equals(ExpiredJwtException.class))
-                    throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, String.format("Token %s has expired, please login again", token));
+                    throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, String.format("Token %s has expired, please login again", token));
+
+                if (e.getClass().equals(SignatureException.class))
+                    throw e;
+
                 else
                     throw new IllegalStateException(String.format("Token %s cannot be trusted", token));
             }
 
-        }
-        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Authorization-Refresh token hasn't been provided with request");
+        } else
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Authorization-Refresh token hasn't been provided with request");
     }
 
 }

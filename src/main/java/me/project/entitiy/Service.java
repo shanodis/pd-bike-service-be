@@ -33,4 +33,9 @@ public class Service {
     @OneToMany(mappedBy = "service",fetch = FetchType.LAZY)
     @JsonManagedReference
     private List<OrderService> orderServices;
+
+    public Service(String serviceName, BigDecimal servicePrice) {
+        this.serviceName = serviceName;
+        this.servicePrice = servicePrice;
+    }
 }

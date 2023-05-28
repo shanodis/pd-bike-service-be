@@ -40,6 +40,10 @@ public class Specifications<T> implements Specification<T>, Cloneable {
         return this;
     }
 
+    public boolean isEmpty(){
+        return searchCriteriaListAnd.isEmpty() && searchCriteriaListOr.isEmpty();
+    }
+
     @Override
     public Predicate toPredicate(@NonNull Root<T> root, @NonNull CriteriaQuery<?> query, @NonNull CriteriaBuilder builder) {
 

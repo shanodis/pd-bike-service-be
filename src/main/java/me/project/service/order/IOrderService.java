@@ -7,6 +7,7 @@ import me.project.dtos.response.page.PageResponse;
 import me.project.entitiy.Order;
 import me.project.entitiy.User;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 public interface IOrderService {
@@ -14,7 +15,7 @@ public interface IOrderService {
 
     Order getById(UUID orderId);
 
-    PageResponse<OrderPaginationResponseDTO> getOrders(PageRequestDTO requestDTO, String phrase);
+    PageResponse<OrderPaginationResponseDTO> getOrders(PageRequestDTO requestDTO, String phrase, LocalDateTime orderDateFrom, LocalDateTime orderDateTo, UUID orderStatusId);
 
     UUID createOrder(OrderCreateRequestDTO request);
 
