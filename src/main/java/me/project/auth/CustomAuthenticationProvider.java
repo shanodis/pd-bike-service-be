@@ -21,7 +21,7 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
 
     @Override
     public Authentication authenticate(Authentication authentication) throws ResponseStatusException {
-        String totp = ((CustomWebAuthenticationDetails) authentication.getDetails()).getVerificationCode();
+        String verificationCode = ((CustomWebAuthenticationDetails) authentication.getDetails()).getVerificationCode();
 
         User user = userService.findUserByEmailSilent(authentication.getName().trim());
         String password = authentication.getCredentials().toString();
@@ -30,7 +30,7 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid username or password");
         }
 
-        if (user.getIsUsing2FA() && (totp == null || !totpService.verifyCode(user.getSecret2FA(), Integer.parseInt(totp)))) {
+        if (user.getIsUsing2FA() && (verificationCode == null || !totpService.verifyCode(user.getSecret2FA(), Integer.parseInt(verificationCode)))) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid 2FA code");
         }
 

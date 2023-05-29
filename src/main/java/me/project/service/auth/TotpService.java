@@ -7,7 +7,6 @@ import me.project.entitiy.User;
 import me.project.repository.UserRepository;
 import org.apache.commons.codec.binary.Base32;
 import org.jboss.aerogear.security.otp.Totp;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -43,22 +42,6 @@ public class TotpService {
     public boolean verifyCode(String secret, int code) {
         Totp totp = new Totp(secret);
         return totp.verify(String.valueOf(code));
-    }
-
-    public ResponseEntity<?> verify2FA(int totp, Principal principal) {
-        Optional<User> optionalUser = userRepository.findByEmail(principal.getName());
-
-        if (!optionalUser.isPresent()) {
-            return (ResponseEntity<?>) ResponseEntity.notFound();
-        }
-
-        User user = optionalUser.get();
-
-        if (verifyCode(user.getSecret2FA(), totp)) {
-            return ResponseEntity.ok().build();
-        }
-
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 
     public ResponseEntity<?> toggle2FA(Principal principal, Toggle2FADTO toggle2FADTO) {
