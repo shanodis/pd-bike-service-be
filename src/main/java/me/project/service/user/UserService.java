@@ -1,5 +1,6 @@
 package me.project.service.user;
 
+import lombok.AllArgsConstructor;
 import me.project.auth.enums.AppUserRole;
 import me.project.dtos.request.PageRequestDTO;
 import me.project.dtos.request.address.AddressUpdateDTO;
@@ -26,7 +27,6 @@ import me.project.service.company.ICompanyService;
 import me.project.service.country.ICountryService;
 import me.project.service.files.IFileService;
 import me.project.service.order.IOrderService;
-import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -87,6 +87,10 @@ public class UserService implements IUserService {
         return userRepository.findByEmail(email).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User with given email " + email + " doesn't exist in database!")
         );
+    }
+
+    public User findUserByEmailSilent(String email) {
+        return userRepository.findByEmail(email).orElse(null);
     }
 
     public CustomerDetailsDTO getCustomerDetails(UUID userId) {

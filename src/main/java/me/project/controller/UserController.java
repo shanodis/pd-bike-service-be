@@ -2,18 +2,22 @@ package me.project.controller;
 
 import me.project.dtos.request.PageRequestDTO;
 import me.project.dtos.request.user.ClientCreateDTO;
+import me.project.dtos.request.user.Toggle2FADTO;
 import me.project.dtos.request.user.UserCreateDTO;
 import me.project.dtos.request.user.UserUpdateDTO;
 import me.project.dtos.response.bikes.SimpleBikeDTO;
 import me.project.dtos.response.page.PageResponse;
 import me.project.dtos.response.user.*;
+import me.project.service.auth.TotpService;
 import me.project.service.bike.IBikeService;
 import me.project.service.files.IFileService;
 import me.project.service.user.IUserService;
 import lombok.AllArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -25,6 +29,12 @@ public class UserController {
     private final IUserService userService;
     private final IFileService fileService;
     private final IBikeService bikeService;
+    private final TotpService totpService;
+
+    @PatchMapping("toggle2FA")
+    public ResponseEntity<?> toggle2FA(Principal principal, @RequestBody Toggle2FADTO toggle2FADTO) {
+        return totpService.toggle2FA(principal, toggle2FADTO);
+    }
 
     @GetMapping
     public List<SimpleUserDTO> getUsers() {

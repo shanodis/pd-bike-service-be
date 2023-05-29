@@ -8,7 +8,7 @@ public class CustomWebAuthenticationDetails extends WebAuthenticationDetails {
 
     public CustomWebAuthenticationDetails(HttpServletRequest request) {
         super(request);
-        verificationCode = request.getParameter("totp");
+        verificationCode = request.getParameter("verificationCode");
     }
 
     public String getVerificationCode() {

@@ -1,6 +1,8 @@
 package me.project.service.auth;
 
 import lombok.AllArgsConstructor;
+import me.project.dtos.request.user.Toggle2FADTO;
+import me.project.dtos.response.user.Toggle2FADTOResponse;
 import me.project.entitiy.User;
 import me.project.repository.UserRepository;
 import org.apache.commons.codec.binary.Base32;
@@ -59,19 +61,20 @@ public class TotpService {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 
-    public ResponseEntity<?> enable2FA(Principal principal) {
+    public ResponseEntity<?> toggle2FA(Principal principal, Toggle2FADTO toggle2FADTO) {
         Optional<User> optionalUser = userRepository.findByEmail(principal.getName());
 
         if (!optionalUser.isPresent()) {
             return (ResponseEntity<?>) ResponseEntity.notFound();
         }
 
+        boolean is2FAEnabled = toggle2FADTO.getIsUsing2FA();
+
         User user = optionalUser.get();
-        String secret = generateSecret();
-        user.setSecret2FA(secret);
-        user.setUsing2FA(true);
+        user.setSecret2FA(is2FAEnabled ? generateSecret() : null);
+        user.setIsUsing2FA(is2FAEnabled);
         userRepository.save(user);
         String qrUrl = generateQRUrl(user);
-        return ResponseEntity.ok("{\"qrUrl\": \"" + qrUrl + "\"}");
+        return ResponseEntity.ok(new Toggle2FADTOResponse(is2FAEnabled, qrUrl));
     }
 }

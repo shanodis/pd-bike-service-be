@@ -29,6 +29,7 @@ public class CustomerDetailsDTO implements Serializable {
     private String city;
     private UUID countryId;
     private String countryName;
+    private Boolean isUsing2FA;
 
     public CustomerDetailsDTO(UUID userId,
                               String firstName,
@@ -36,7 +37,9 @@ public class CustomerDetailsDTO implements Serializable {
                               String phoneNumberPrefix,
                               String phoneNumber,
                               String note,
-                              String email) {
+                              String email,
+                              Boolean isUsing2FA
+    ) {
         this.userId = userId;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -44,6 +47,8 @@ public class CustomerDetailsDTO implements Serializable {
         this.phoneNumber = phoneNumber;
         this.note = note;
         this.email = email;
+        this.isUsing2FA = isUsing2FA;
+
     }
 
     public CustomerDetailsDTO(UUID userId,
@@ -55,7 +60,9 @@ public class CustomerDetailsDTO implements Serializable {
                               UUID companyId,
                               String companyName,
                               String taxNumber,
-                              String email) {
+                              String email,
+                              Boolean isUsing2FA
+    ) {
         this.userId = userId;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -66,6 +73,8 @@ public class CustomerDetailsDTO implements Serializable {
         this.companyName = companyName;
         this.taxNumber = taxNumber;
         this.email = email;
+        this.isUsing2FA = isUsing2FA;
+
     }
 
     public CustomerDetailsDTO(UUID userId,
@@ -80,7 +89,9 @@ public class CustomerDetailsDTO implements Serializable {
                               String city,
                               UUID countryId,
                               String countryName,
-                              String email) {
+                              String email,
+                              Boolean isUsing2FA
+    ) {
         this.userId = userId;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -94,6 +105,8 @@ public class CustomerDetailsDTO implements Serializable {
         this.countryId = countryId;
         this.countryName = countryName;
         this.email = email;
+        this.isUsing2FA = isUsing2FA;
+
     }
 
     public static CustomerDetailsDTO convertFromEntity(User user) {
@@ -117,9 +130,10 @@ public class CustomerDetailsDTO implements Serializable {
                     user.getPhoneNumberPrefix(),
                     user.getPhoneNumber(),
                     user.getNote(),
-                    user.getEmail()
+                    user.getEmail(),
+                    user.getIsUsing2FA()
             );
-        else if (isCompanyPresent && !isAddressPresent)
+        if (isCompanyPresent && !isAddressPresent)
             return new CustomerDetailsDTO(
                     user.getUserId(),
                     user.getFirstName(),
@@ -130,9 +144,10 @@ public class CustomerDetailsDTO implements Serializable {
                     company.getCompanyId(),
                     company.getCompanyName(),
                     company.getTaxNumber(),
-                    user.getEmail()
+                    user.getEmail(),
+                    user.getIsUsing2FA()
             );
-        else if (!isCompanyPresent)
+        if (!isCompanyPresent)
             return new CustomerDetailsDTO(
                     user.getUserId(),
                     user.getFirstName(),
@@ -146,9 +161,10 @@ public class CustomerDetailsDTO implements Serializable {
                     address.getCity(),
                     country.getCountryId(),
                     country.getCountryName(),
-                    user.getEmail()
+                    user.getEmail(),
+                    user.getIsUsing2FA()
             );
-        else return new CustomerDetailsDTO(
+        return new CustomerDetailsDTO(
                 user.getUserId(),
                 user.getFirstName(),
                 user.getLastName(),
@@ -164,7 +180,8 @@ public class CustomerDetailsDTO implements Serializable {
                 address.getPostCode(),
                 address.getCity(),
                 country.getCountryId(),
-                country.getCountryName()
+                country.getCountryName(),
+                user.getIsUsing2FA()
         );
     }
 

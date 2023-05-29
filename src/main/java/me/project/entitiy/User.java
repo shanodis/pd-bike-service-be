@@ -56,7 +56,7 @@ public class User implements UserDetails {
     private String provider;
     private String providerId;
     //2FA fields
-    private boolean isUsing2FA;
+    private Boolean isUsing2FA;
     private String secret2FA;
 
     @OneToMany(mappedBy = "user",fetch = FetchType.LAZY)
