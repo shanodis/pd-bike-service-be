@@ -1,9 +1,11 @@
 package me.project.auth.formLogin;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import lombok.AllArgsConstructor;
 import me.project.service.user.UserService;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
@@ -14,15 +16,15 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.Date;
-import java.util.UUID;
+import java.util.*;
 
 import static me.project.enums.JwtExpire.ACCESS_TOKEN;
 import static me.project.enums.JwtExpire.REFRESH_TOKEN;
 
 @AllArgsConstructor
-public class FormLoginHelper implements AuthenticationSuccessHandler {
+public class FormLoginHelper implements AuthenticationSuccessHandler, AuthenticationFailureHandler {
     private final UserService userService;
+    private ObjectMapper objectMapper;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
@@ -57,5 +59,15 @@ public class FormLoginHelper implements AuthenticationSuccessHandler {
             }
             throw new ServletException(e.getMessage());
         }
+    }
+
+    @Override
+    public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException {
+        response.setStatus(HttpStatus.UNAUTHORIZED.value());
+        Map<String, Object> data = new HashMap<>();
+        data.put("timestamp", Calendar.getInstance().getTime());
+        data.put("exception", exception.getMessage());
+
+        response.getOutputStream().println(objectMapper.writeValueAsString(data));
     }
 }

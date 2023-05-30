@@ -1,5 +1,7 @@
 package me.project.auth.jwt;
 
+import com.amazonaws.services.iot.model.UnauthorizedException;
+import com.amazonaws.services.lexruntime.model.NotAcceptableException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jws;
@@ -17,17 +19,37 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 public class JwtTokenVerifier extends OncePerRequestFilter {
+    private final String[] EXCLUDED_PATHS = {"/api/v1/auth/refresh-access"};
+
+    private String getFilerJsonError(HttpServletRequest request, String message) {
+        return "{ " +
+                "\"error\": \"Unauthorized\", " +
+                "\"message\": \"" +
+                message +
+                "\", " +
+                "\"path\": \"" +
+                request.getRequestURL() +
+                "\"" +
+                "} ";
+    }
+
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        String path = request.getRequestURI();
+        return Arrays.asList(EXCLUDED_PATHS).contains(path);
+    }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-
         String authorizationHeader = request.getHeader("Authorization");
 
         if (Strings.isNullOrEmpty(authorizationHeader) || !authorizationHeader.startsWith("Bearer ")) {
@@ -57,10 +79,15 @@ public class JwtTokenVerifier extends OncePerRequestFilter {
                 SecurityContextHolder.getContext().setAuthentication(authentication);
 
             } catch (Exception e) {
-                if (e.getClass().equals(ExpiredJwtException.class))
-                    throw new IllegalStateException(String.format("Token %s has expired, please login again", token));
-                else
-                    throw new IllegalStateException(String.format("Token %s cannot be trusted", token));
+                if (e.getClass().equals(ExpiredJwtException.class)) {
+                    String jsonError = getFilerJsonError(request, String.format("Token %s has expired, please login again", token));
+                    response.setContentType("application/json");
+                    response.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
+                    response.getWriter().write(jsonError);
+                    return;
+                }
+
+                throw new UnauthorizedException(String.format("Token %s cannot be trusted", token));
             }
 
             filterChain.doFilter(request, response);
