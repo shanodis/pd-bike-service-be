@@ -10,6 +10,7 @@ import me.project.auth.enums.AppUserRole;
 import me.project.dtos.request.user.ClientCreateDTO;
 import me.project.dtos.request.user.CustomerRegisterDTO;
 import me.project.dtos.request.user.UserCreateDTO;
+import org.springframework.lang.Nullable;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -56,7 +57,9 @@ public class User implements UserDetails {
     private String provider;
     private String providerId;
     //2FA fields
+    @Nullable
     private Boolean isUsing2FA;
+    @Nullable
     private String secret2FA;
 
     @OneToMany(mappedBy = "user",fetch = FetchType.LAZY)

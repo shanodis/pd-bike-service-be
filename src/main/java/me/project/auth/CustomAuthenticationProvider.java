@@ -30,7 +30,7 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid username or password");
         }
 
-        if (user.getIsUsing2FA() && (verificationCode == null || !totpService.verifyCode(user.getSecret2FA(), Integer.parseInt(verificationCode)))) {
+        if (Boolean.TRUE.equals(user.getIsUsing2FA()) && (verificationCode == null || !totpService.verifyCode(user.getSecret2FA(), Integer.parseInt(verificationCode)))) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid 2FA code");
         }
 
