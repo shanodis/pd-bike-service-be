@@ -3,9 +3,7 @@ package me.project.entitiy;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import me.project.auth.enums.AppUserRole;
 import me.project.dtos.request.user.ClientCreateDTO;
 import me.project.dtos.request.user.CustomerRegisterDTO;
@@ -27,6 +25,8 @@ import java.util.UUID;
 @Setter
 @EqualsAndHashCode
 @Entity
+@Builder
+@AllArgsConstructor
 @Table(name = "users")
 public class User implements UserDetails {
     @Id

@@ -13,6 +13,7 @@ import me.project.service.bike.IBikeService;
 import me.project.service.files.IFileService;
 import me.project.service.user.IUserService;
 import lombok.AllArgsConstructor;
+import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;

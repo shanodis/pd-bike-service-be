@@ -10,8 +10,6 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 public class BikeFilesDTO {
-
     private UUID fileId;
     private String fileUrl;
-
 }

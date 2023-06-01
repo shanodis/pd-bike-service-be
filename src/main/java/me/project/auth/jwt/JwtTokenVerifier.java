@@ -1,7 +1,5 @@
 package me.project.auth.jwt;
 
-import com.amazonaws.services.iot.model.UnauthorizedException;
-import com.amazonaws.services.lexruntime.model.NotAcceptableException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jws;
@@ -19,7 +17,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
@@ -56,6 +53,7 @@ public class JwtTokenVerifier extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
         } else {
             String token = authorizationHeader.replace("Bearer ", "");
+
             try {
                 String secretKey = "someStringHashToHaveReallyGoodSecurityOverHereSoNoOneWithAmateurSkillsWouldn'tHackThis";
 
@@ -81,13 +79,15 @@ public class JwtTokenVerifier extends OncePerRequestFilter {
             } catch (Exception e) {
                 if (e.getClass().equals(ExpiredJwtException.class)) {
                     String jsonError = getFilerJsonError(request, String.format("Token %s has expired, please login again", token));
-                    response.setContentType("application/json");
                     response.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
+                    response.setContentType("application/json");
                     response.getWriter().write(jsonError);
                     return;
                 }
 
-                throw new UnauthorizedException(String.format("Token %s cannot be trusted", token));
+                String jsonError = getFilerJsonError(request, String.format("Token %s cannot be trusted", token));
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                response.getWriter().write(jsonError);
             }
 
             filterChain.doFilter(request, response);

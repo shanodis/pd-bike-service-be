@@ -4,12 +4,10 @@ import me.project.dtos.request.PageRequestDTO;
 import me.project.dtos.request.order.OrderCreateRequestDTO;
 import me.project.dtos.request.orderPart.OrderPartUpdateRequestDTO;
 import me.project.dtos.request.orderService.OrderServiceCreateRequestDTO;
-import me.project.dtos.response.order.OrderPaymentDTO;
 import me.project.dtos.response.order.OrderPaginationResponseDTO;
 import me.project.dtos.response.page.PageResponse;
 import me.project.entitiy.Order;
 import me.project.entitiy.User;
-import com.stripe.exception.StripeException;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -31,8 +29,6 @@ public interface IOrderService {
     void addOrderPartToOrder(UUID orderId, UUID orderPartId);
 
     UUID addOrderServiceToOrder(UUID orderId, OrderServiceCreateRequestDTO request);
-
-    OrderPaymentDTO createPaymentIntent(UUID orderId) throws StripeException;
 
     void completePayment(UUID orderId);
 

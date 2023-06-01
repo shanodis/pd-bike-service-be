@@ -1,20 +1,18 @@
 package me.project.controller;
 
 
+import lombok.AllArgsConstructor;
 import me.project.dtos.request.PageRequestDTO;
 import me.project.dtos.request.order.OrderCreateRequestDTO;
 import me.project.dtos.request.orderPart.OrderPartCreateDTO;
 import me.project.dtos.request.orderPart.OrderPartUpdateRequestDTO;
 import me.project.dtos.request.orderService.OrderServiceCreateRequestDTO;
-import me.project.dtos.response.order.OrderPaymentDTO;
 import me.project.dtos.response.order.OrderInformationDTO;
 import me.project.dtos.response.order.OrderInvoiceDTO;
 import me.project.dtos.response.order.OrderPaginationResponseDTO;
 import me.project.dtos.response.page.PageResponse;
 import me.project.service.order.IOrderService;
 import me.project.service.order.part.IOrderPartService;
-import com.stripe.exception.StripeException;
-import lombok.AllArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
@@ -57,11 +55,6 @@ public class OrderController {
                 orderDateTo,
                 orderStatusId,
                 userId);
-    }
-
-    @PostMapping("{orderId}/create-payment-intent")
-    public OrderPaymentDTO createPaymentIntent(@PathVariable UUID orderId) throws StripeException {
-        return orderService.createPaymentIntent(orderId);
     }
 
     @PostMapping("{orderId}/complete-payment")

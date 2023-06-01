@@ -74,11 +74,11 @@ public class UserService implements IUserService {
     }
 
     public String getUserAvatar(UUID userId) {
-
         File avatar = getUser(userId).getAvatar();
 
-        if(avatar == null)
-            return "";
+        if (avatar == null) {
+            return null;
+        }
 
         return fileService.getFileUrl(avatar.getFileId());
     }
