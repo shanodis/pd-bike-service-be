@@ -35,10 +35,4 @@ public class OrderPart {
     private String orderCode;
     private String orderName;
     private BigDecimal orderPrice;
-
-    public OrderPart(String orderCode, String orderName, BigDecimal orderPrice) {
-        this.orderCode = orderCode;
-        this.orderName = orderName;
-        this.orderPrice = orderPrice;
-    }
 }

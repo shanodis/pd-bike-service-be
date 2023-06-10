@@ -6,7 +6,6 @@ import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
-import java.util.UUID;
 
 @Data
 @NoArgsConstructor
@@ -14,11 +13,11 @@ import java.util.UUID;
 public class ChangePasswordDTO implements Serializable {
 
     @NotNull
-    private String OldPassword;
+    private String oldPassword;
 
     @NotNull
-    private String NewPassword;
+    private String newPassword;
 
     @NotNull
-    private String NewPasswordConfirm;
+    private String newPasswordConfirm;
 }

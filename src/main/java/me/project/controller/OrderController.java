@@ -57,11 +57,6 @@ public class OrderController {
                 userId);
     }
 
-    @PostMapping("{orderId}/complete-payment")
-    public void completePayment(@PathVariable UUID orderId) {
-        orderService.completePayment(orderId);
-    }
-
     @PostMapping()
     public UUID createOrder(@RequestBody OrderCreateRequestDTO request) {
         return orderService.createOrder(request);

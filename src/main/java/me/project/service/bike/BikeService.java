@@ -19,6 +19,7 @@ import me.project.service.user.IUserService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -111,7 +112,7 @@ public class BikeService implements IBikeService {
 
         return fileService.getFilesUrls(bikeFiles
                 .stream()
-                .map(bikeFile -> bikeFile.getFile())
+                .map(BikeFile::getFile)
                 .collect(Collectors.toList()));
     }
 
@@ -121,13 +122,18 @@ public class BikeService implements IBikeService {
             Specifications<Bike> bikeSpecifications = new Specifications<Bike>()
                     .and(new SearchCriteria("userId", userId, SearchOperation.EQUAL_JOIN_USER));
 
-            return new PageResponse<>(
-                    bikeRepository.findAll(
-                            bikeSpecifications,
-                            pageRequestDTO.getRequest(Bike.class)
-                    ).map(bike -> new DictionaryResponseDTO(bike.getBikeId(), bike.getBikeName()))
+            Page<Bike> bikes = bikeRepository.findAll(
+                    bikeSpecifications,
+                    pageRequestDTO.getRequest(Bike.class)
             );
 
+            if (bikes != null) {
+                return new PageResponse<>(
+                        bikes.map(bike -> new DictionaryResponseDTO(bike.getBikeId(), bike.getBikeName()))
+                );
+            }
+
+            return new PageResponse<>(Page.empty());
         }
 
         return new PageResponse<>(
@@ -255,10 +261,4 @@ public class BikeService implements IBikeService {
 
         bikeRepository.deleteById(bikeId);
     }
-
-
-    public Bike getBike(String bikeName) {
-        return bikeRepository.findBikeByBikeNameContaining(bikeName).orElse(null);
-    }
-
 }

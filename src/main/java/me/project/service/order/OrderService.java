@@ -60,9 +60,7 @@ public class OrderService implements IOrderService {
         return orderRepository.findById(orderId).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, ORDER_NOT_FOUND(orderId))
         );
-
     }
-
 
     public PageResponse<OrderPaginationResponseDTO> getOrders(PageRequestDTO requestDTO,
                                                               String phrase,
@@ -113,7 +111,6 @@ public class OrderService implements IOrderService {
 
 
     public UUID createOrder(OrderCreateRequestDTO request) {
-
         Bike bike;
 
         User user = userRepository.findById(request.getUserId()).orElseThrow(
@@ -133,10 +130,11 @@ public class OrderService implements IOrderService {
 
             bikeRepository.save(bike);
 
-        } else
+        } else {
             bike = bikeRepository.findById(request.getBikeId()).orElseThrow(
                     () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Bike not found")
             );
+        }
 
 
         Order order = new Order(
@@ -147,14 +145,10 @@ public class OrderService implements IOrderService {
                 Status.TODO.getOrderStatus()
         );
 
-        orderRepository.save(order);
-
-        return order.getOrderId();
-
+        return orderRepository.save(order).getOrderId();
     }
 
-
-    public void addOrderPartToOrder(UUID orderId, UUID orderPartId) {
+    public void addOrderPartToOrder(UUID orderId, UUID orderPartId) throws ResponseStatusException {
         Order order = getById(orderId);
 
         ArrayList<OrderPart> orderParts = new ArrayList<>(getById(orderId).getOrderParts());
@@ -167,8 +161,7 @@ public class OrderService implements IOrderService {
     }
 
     @Transactional
-    public UUID addOrderServiceToOrder(UUID orderId, OrderServiceCreateRequestDTO request) {
-
+    public UUID addOrderServiceToOrder(UUID orderId, OrderServiceCreateRequestDTO request) throws ResponseStatusException {
         Order order = getById(orderId);
         me.project.entitiy.OrderService orderService = new me.project.entitiy.OrderService();
 
@@ -182,17 +175,15 @@ public class OrderService implements IOrderService {
                 me.project.entitiy.Service tmp = new me.project.entitiy.Service();
                 tmp.setServiceId(request.getServiceId());
                 orderService.setService(tmp);
-                orderServiceRepository.save(orderService);
+                orderService = orderServiceRepository.save(orderService);
             }
         } else {
             orderService = createServiceSetOrderService(request.getServiceName(), request.getServicePrice());
         }
 
-        {
-            Order tmp = new Order();
-            tmp.setOrderId(orderId);
-            orderService.setOrder(tmp);
-        }
+        Order tmp = new Order();
+        tmp.setOrderId(orderId);
+        orderService.setOrder(tmp);
 
         ArrayList<me.project.entitiy.OrderService> orderServices = new ArrayList<>();
         orderServices.add(orderService);
@@ -201,26 +192,15 @@ public class OrderService implements IOrderService {
         return orderService.getOrderServiceId();
     }
 
-    public void completePayment(UUID orderId) {
-        Order order = getById(orderId);
-
-        order.setIsPayed(true);
-        order.setOrderStatus(Status.DONE.getOrderStatus());
-
-        orderRepository.save(order);
-    }
-
-    public void updateOrderService(UUID orderId, UUID orderStatusId) {
-
+    public void updateOrderService(UUID orderId, UUID orderStatusId) throws ResponseStatusException {
         Order order = getById(orderId);
 
         order.setOrderStatus(orderStatusService.getStatusById(orderStatusId));
 
         orderRepository.save(order);
-
     }
 
-    public void updateOrderNote(UUID orderId, String note) {
+    public void updateOrderNote(UUID orderId, String note) throws ResponseStatusException {
 
         Order order = getById(orderId);
 
@@ -229,7 +209,7 @@ public class OrderService implements IOrderService {
         orderRepository.save(order);
     }
 
-    public void updateOrdersOrderPart(UUID orderId, UUID orderPartId, OrderPartUpdateRequestDTO request) {
+    public void updateOrdersOrderPart(UUID orderId, UUID orderPartId, OrderPartUpdateRequestDTO request) throws ResponseStatusException {
 
         getById(orderId);
 
@@ -249,16 +229,14 @@ public class OrderService implements IOrderService {
         orderPartRepository.save(orderPart);
     }
 
-    public void deleteOrdersOrderPart(UUID orderId, UUID orderPartId) {
-
+    public void deleteOrdersOrderPart(UUID orderId, UUID orderPartId) throws ResponseStatusException {
         getById(orderId);
 
         OrderPart orderPart = orderPartService.getOrderPartById(orderPartId);
         orderPartRepository.delete(orderPart);
     }
 
-    public void deleteOrdersOrderService(UUID orderId, UUID orderServiceId) {
-
+    public void deleteOrdersOrderService(UUID orderId, UUID orderServiceId) throws ResponseStatusException {
         getById(orderId);
 
         me.project.entitiy.OrderService orderService = orderServiceRepository.findById(orderServiceId).orElseThrow(
@@ -268,19 +246,13 @@ public class OrderService implements IOrderService {
         orderServiceRepository.delete(orderService);
     }
 
-
     private me.project.entitiy.OrderService createServiceSetOrderService(String serviceName, BigDecimal servicePrice) {
         me.project.entitiy.OrderService orderService = new me.project.entitiy.OrderService();
         UUID serviceId = serviceService.createService(new CreateServiceDTO(serviceName, servicePrice));
-        {
-            me.project.entitiy.Service tmp = new me.project.entitiy.Service();
-            tmp.setServiceId(serviceId);
-            orderService.setService(tmp);
-            orderServiceRepository.save(orderService);
-        }
 
-        return orderService;
+        me.project.entitiy.Service tmp = new me.project.entitiy.Service();
+        tmp.setServiceId(serviceId);
+        orderService.setService(tmp);
+        return orderServiceRepository.save(orderService);
     }
-
-
 }

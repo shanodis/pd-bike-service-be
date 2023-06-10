@@ -63,9 +63,9 @@ public class FileService implements IFileService {
         me.project.entitiy.File newFile = new me.project.entitiy.File();
         newFile.setFileName(concatedFileName);
 
-        fileRepository.save(newFile);
+        me.project.entitiy.File savedFile = fileRepository.save(newFile);
 
-        return newFile.getFileId();
+        return savedFile.getFileId();
     }
 
     @SneakyThrows

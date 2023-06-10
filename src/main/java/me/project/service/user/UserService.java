@@ -282,7 +282,7 @@ public class UserService implements IUserService {
 
         User user = new User(customerRegisterDTO, true, false, AppUserRole.EMPLOYEE);
 
-        userRepository.save(user);
+        User createdUser = userRepository.save(user);
 
         emailService.send(
                 user.getEmail(),
@@ -290,7 +290,7 @@ public class UserService implements IUserService {
                 "Welcome to Bike Service Employee Family!"
         );
 
-        return user;
+        return createdUser;
     }
 
     public void uploadUserAvatar(UUID userId, MultipartFile file) {

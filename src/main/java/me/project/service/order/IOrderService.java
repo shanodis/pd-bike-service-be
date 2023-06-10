@@ -30,8 +30,6 @@ public interface IOrderService {
 
     UUID addOrderServiceToOrder(UUID orderId, OrderServiceCreateRequestDTO request);
 
-    void completePayment(UUID orderId);
-
     void updateOrdersOrderPart(UUID orderId, UUID orderPartId, OrderPartUpdateRequestDTO request);
 
     void deleteOrdersOrderPart(UUID orderId, UUID orderPartId);

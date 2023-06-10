@@ -7,6 +7,7 @@ import me.project.entitiy.User;
 import me.project.repository.UserRepository;
 import org.apache.commons.codec.binary.Base32;
 import org.jboss.aerogear.security.otp.Totp;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -48,7 +49,7 @@ public class TotpService {
         Optional<User> optionalUser = userRepository.findByEmail(principal.getName());
 
         if (!optionalUser.isPresent()) {
-            return (ResponseEntity<?>) ResponseEntity.notFound();
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
         boolean is2FAEnabled = toggle2FADTO.getIsUsing2FA();
@@ -57,7 +58,7 @@ public class TotpService {
         user.setSecret2FA(is2FAEnabled ? generateSecret() : null);
         user.setIsUsing2FA(is2FAEnabled);
         userRepository.save(user);
-        String qrUrl = generateQRUrl(user);
+        String qrUrl = is2FAEnabled ? generateQRUrl(user) : null;
         return ResponseEntity.ok(new Toggle2FADTOResponse(is2FAEnabled, qrUrl));
     }
 }

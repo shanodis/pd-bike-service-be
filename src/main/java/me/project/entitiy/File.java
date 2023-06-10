@@ -35,4 +35,9 @@ public class File {
     @OneToMany(mappedBy = "avatar",fetch = FetchType.LAZY)
     @JsonManagedReference
     private List<User> users;
+
+    public File(UUID fileId, String fileName) {
+        this.fileId = fileId;
+        this.fileName = fileName;
+    }
 }

@@ -14,12 +14,17 @@ import java.util.UUID;
 
 @Service
 @AllArgsConstructor
-public class OrderPartService implements IOrderPartService{
+public class OrderPartService implements IOrderPartService {
     private final OrderPartRepository orderPartRepository;
     private final OrderRepository orderRepository;
 
-    private final String ORDER_PART_NOT_FOUND(UUID orderPartId){return String.format("Order Part with id %s not found", orderPartId);}
-    private final String ORDER_NOT_FOUND(UUID orderId) {return String.format("Order with id %s not found", orderId);}
+    private String ORDER_PART_NOT_FOUND(UUID orderPartId) {
+        return String.format("Order Part with id %s not found", orderPartId);
+    }
+
+    private String ORDER_NOT_FOUND(UUID orderId) {
+        return String.format("Order with id %s not found", orderId);
+    }
 
     public OrderPart getOrderPartById(UUID orderPartId) {
         return orderPartRepository.findById(orderPartId).orElseThrow(
@@ -28,23 +33,22 @@ public class OrderPartService implements IOrderPartService{
     }
 
     public UUID createOrderPart(UUID orderId, OrderPartCreateDTO request) {
-         orderRepository.findById(orderId).orElseThrow(
-                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, ORDER_NOT_FOUND(orderId))
-         );
+        orderRepository.findById(orderId).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, ORDER_NOT_FOUND(orderId))
+        );
 
-         OrderPart orderPart = new OrderPart();
+        OrderPart orderPart = new OrderPart();
 
-        {
-            Order tmp = new Order();
-            tmp.setOrderId(orderId);
-            orderPart.setOrder(tmp);
-        }
-         orderPart.setOrderCode(request.getOrderCode().trim());
-         orderPart.setOrderName(request.getOrderName().trim());
-         orderPart.setOrderPrice(request.getOrderPrice());
+        Order tmp = new Order();
+        tmp.setOrderId(orderId);
+        orderPart.setOrder(tmp);
 
-         orderPartRepository.save(orderPart);
+        orderPart.setOrderCode(request.getOrderCode().trim());
+        orderPart.setOrderName(request.getOrderName().trim());
+        orderPart.setOrderPrice(request.getOrderPrice());
 
-         return orderPart.getOrderPartId();
+        orderPartRepository.save(orderPart);
+
+        return orderPart.getOrderPartId();
     }
 }
