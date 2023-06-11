@@ -22,7 +22,6 @@ public class FileController {
         return fileService.getFileUrl(fileId);
     }
 
-    @Secured({"ROLE_ADMIN", "ROLE_EMPLOYEE", "ROLE_CLIENT"})
     @GetMapping("{fileId}/download")
     public ResponseEntity<Resource> getFile(@PathVariable UUID fileId) {
         return fileService.getFile(fileId);

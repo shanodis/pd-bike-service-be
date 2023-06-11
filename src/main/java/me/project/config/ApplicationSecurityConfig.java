@@ -46,7 +46,8 @@ public class ApplicationSecurityConfig extends WebSecurityConfigurerAdapter {
             "/swagger-ui/**",
             // -- Rest of endpoints
             "/login/**",
-            "/api/v1/auth/**"
+            "/api/v1/auth/**",
+            "/api/v1/files/{fileId}/download"
     };
 
     /**

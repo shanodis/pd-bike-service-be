@@ -45,7 +45,8 @@ public class JwtTokenVerifier extends OncePerRequestFilter {
             "/swagger-ui/**",
             // -- Rest of endpoints
             "/login/**",
-            "/api/v1/auth/**"
+            "/api/v1/auth/**",
+            "/api/v1/files/{fileId}/download"
     };
 
     private String getFilerJsonError(HttpServletRequest request, String message) {
