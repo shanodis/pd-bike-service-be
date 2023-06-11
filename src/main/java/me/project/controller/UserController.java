@@ -1,5 +1,7 @@
 package me.project.controller;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import lombok.AllArgsConstructor;
 import me.project.dtos.request.PageRequestDTO;
 import me.project.dtos.request.user.ClientCreateDTO;
 import me.project.dtos.request.user.Toggle2FADTO;
@@ -12,8 +14,6 @@ import me.project.service.auth.TotpService;
 import me.project.service.bike.IBikeService;
 import me.project.service.files.IFileService;
 import me.project.service.user.IUserService;
-import lombok.AllArgsConstructor;
-import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -26,6 +26,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("api/v1/users")
 @AllArgsConstructor
+@SecurityRequirement(name = "Bearer Authentication")
 public class UserController {
     private final IUserService userService;
     private final IFileService fileService;

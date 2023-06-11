@@ -10,6 +10,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.util.AntPathMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
@@ -25,7 +26,23 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class JwtTokenVerifier extends OncePerRequestFilter {
-    private final String[] EXCLUDED_PATHS = {"/api/v1/auth/refresh-access"};
+    private final AntPathMatcher pathMatcher = new AntPathMatcher();
+
+    private static final String[] EXCLUDED_PATHS = {
+            "/v2/api-docs",
+            "/swagger-resources",
+            "/swagger-resources/**",
+            "/configuration/ui",
+            "/configuration/security",
+            "/swagger-ui.html",
+            "/webjars/**",
+            // -- Swagger UI v3 (OpenAPI)
+            "/v3/api-docs/**",
+            "/swagger-ui/**",
+            // -- Rest of endpoints
+            "/login/**",
+            "/api/v1/auth/**"
+    };
 
     private String getFilerJsonError(HttpServletRequest request, String message) {
         return "{ " +
@@ -42,15 +59,17 @@ public class JwtTokenVerifier extends OncePerRequestFilter {
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
         String path = request.getRequestURI();
-        return Arrays.asList(EXCLUDED_PATHS).contains(path);
+        return Arrays.stream(EXCLUDED_PATHS).anyMatch(p -> pathMatcher.match(p, path));
     }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String authorizationHeader = request.getHeader("Authorization");
-
         if (Strings.isNullOrEmpty(authorizationHeader) || !authorizationHeader.startsWith("Bearer ")) {
-            filterChain.doFilter(request, response);
+            String jsonError = getFilerJsonError(request, "Invalid token. Unauthorized");
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setContentType("application/json");
+            response.getWriter().write(jsonError);
         } else {
             String token = authorizationHeader.replace("Bearer ", "");
 

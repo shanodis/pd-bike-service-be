@@ -25,28 +25,47 @@ public class ApplicationSecurityConfig extends WebSecurityConfigurerAdapter {
     private final UserService userService;
     private final CustomWebAuthenticationDetailsSource authenticationDetailsSource;
 
+    private static final String[] AUTH_WHITELIST = {
+            // -- Swagger UI v2
+            "/v2/api-docs",
+            "/swagger-resources",
+            "/swagger-resources/**",
+            "/configuration/ui",
+            "/configuration/security",
+            "/swagger-ui.html",
+            "/webjars/**",
+            // -- Swagger UI v3 (OpenAPI)
+            "/v3/api-docs/**",
+            "/swagger-ui/**",
+            // -- Rest of endpoints
+            "/login/**",
+            "/api/v1/auth/**"
+    };
+
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.cors()
                 .and()
                 .csrf().disable()
+                .authorizeRequests()
+                .antMatchers(AUTH_WHITELIST).permitAll()
+                .antMatchers("/**").authenticated() // require authentication for any endpoint that's not whitelisted
+                .and()
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and()
                 .formLogin()
                 .authenticationDetailsSource(authenticationDetailsSource)
                 .successHandler(authenticationSuccessHandler())
                 .failureHandler(authenticationFailureHandler())
                 .and()
                 .addFilterAfter(new JwtTokenVerifier(), UsernamePasswordAuthenticationFilter.class)
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .and()
                 .headers(headers -> headers
                         .contentTypeOptions(withDefaults())
                         .xssProtection(withDefaults())
                         .cacheControl(withDefaults())
                         .httpStrictTransportSecurity(withDefaults())
-                        .frameOptions(withDefaults()
-                        ))
-                .authorizeRequests()
-                .antMatchers("/index", "/css/*", "/js/*", "/swagger-ui.html").permitAll()
+                        .frameOptions(withDefaults())
+                )
         ;
     }
 
