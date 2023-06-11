@@ -3,11 +3,13 @@ package me.project.config;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import me.project.auth.CustomWebAuthenticationDetailsSource;
+import me.project.auth.enums.AppUserRole;
 import me.project.auth.formLogin.FormLoginHelper;
 import me.project.auth.jwt.JwtTokenVerifier;
 import me.project.service.user.UserService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -21,6 +23,7 @@ import static org.springframework.security.config.Customizer.withDefaults;
 @Configuration
 @AllArgsConstructor
 @EnableWebSecurity
+@EnableGlobalMethodSecurity(securedEnabled = true)
 public class ApplicationSecurityConfig extends WebSecurityConfigurerAdapter {
     private final UserService userService;
     private final CustomWebAuthenticationDetailsSource authenticationDetailsSource;
@@ -65,8 +68,7 @@ public class ApplicationSecurityConfig extends WebSecurityConfigurerAdapter {
                         .cacheControl(withDefaults())
                         .httpStrictTransportSecurity(withDefaults())
                         .frameOptions(withDefaults())
-                )
-        ;
+                );
     }
 
     @Bean

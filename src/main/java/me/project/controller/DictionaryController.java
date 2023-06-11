@@ -11,6 +11,8 @@ import me.project.service.order.status.IOrderStatusService;
 import me.project.service.service.IServiceService;
 import me.project.service.user.IUserService;
 import lombok.AllArgsConstructor;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -29,6 +31,7 @@ public class DictionaryController {
     private final IOrderStatusService orderStatus;
     private final IServiceService serviceService;
 
+    @Secured({"ROLE_ADMIN", "ROLE_EMPLOYEE", "ROLE_CLIENT"})
     @GetMapping("bikes")
     public PageResponse<DictionaryResponseDTO> getBikes(@RequestParam Integer page, @RequestParam Integer pageLimit,
                                                         @RequestParam String sortDir, @RequestParam String sortBy,
@@ -36,6 +39,7 @@ public class DictionaryController {
         return bikeService.getBikesDictionary(new PageRequestDTO(page, pageLimit, sortDir, sortBy), userId);
     }
 
+    @Secured({"ROLE_ADMIN", "ROLE_EMPLOYEE", "ROLE_CLIENT"})
     @GetMapping("countries")
     public PageResponse<CountryWithoutAddressesDTO> getCountries(
             @RequestParam(required = false) Integer page,
@@ -45,12 +49,14 @@ public class DictionaryController {
         return countryService.getAllCountries(new PageRequestDTO(page, pageLimit, sortDir, sortBy));
     }
 
+    @Secured({"ROLE_ADMIN", "ROLE_EMPLOYEE", "ROLE_CLIENT"})
     @GetMapping("order-statuses")
     public PageResponse<DictionaryResponseDTO> getStatuses(@RequestParam Integer page, @RequestParam Integer pageLimit,
                                                            @RequestParam String sortDir, @RequestParam String sortBy) {
         return orderStatus.getAllStatusesDictionary(new PageRequestDTO(page, pageLimit, sortDir, sortBy));
     }
 
+    @Secured({"ROLE_ADMIN", "ROLE_EMPLOYEE", "ROLE_CLIENT"})
     @GetMapping("services")
     public PageResponse<ServiceDTO> getServices(@RequestParam Integer page, @RequestParam Integer pageLimit,
                                                 @RequestParam String sortDir, @RequestParam String sortBy,
@@ -58,10 +64,10 @@ public class DictionaryController {
         return serviceService.getAllServicesDictionary(new PageRequestDTO(page, pageLimit, sortDir, sortBy), phrase);
     }
 
+    @Secured({"ROLE_ADMIN", "ROLE_EMPLOYEE"})
     @GetMapping("users")
     public PageResponse<DictionaryResponseDTO> getUsers(@RequestParam Integer page, @RequestParam Integer pageLimit,
                                                         @RequestParam String sortDir, @RequestParam String sortBy) {
         return userService.getUsersDictionary(new PageRequestDTO(page, pageLimit, sortDir, sortBy));
     }
-
 }
