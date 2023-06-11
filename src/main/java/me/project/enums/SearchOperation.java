@@ -7,8 +7,15 @@ import me.project.search.SearchCriteria;
 import javax.persistence.criteria.*;
 import java.time.LocalDateTime;
 
+/**
+ * Enum SearchOperation reprezentuje różne operacje wyszukiwania używane w specyfikacjach.
+ * Każda operacja ma zdefiniowaną metodę "getPredicate", która generuje odpowiedni predykat dla danego kryterium wyszukiwania.
+ */
 public enum SearchOperation {
 
+    /**
+     * Operacja GREATER_THAN generuje predykat "greaterThan" dla danego kryterium.
+     */
     GREATER_THAN {
         @Override
         public <T> Predicate getPredicate(Root<T> root, SearchCriteria criteria, CriteriaBuilder builder) {
@@ -19,6 +26,9 @@ public enum SearchOperation {
         }
     },
 
+    /**
+     * Operacja LESS_THAN generuje predykat "lessThan" dla danego kryterium.
+     */
     LESS_THAN {
         @Override
         public <T> Predicate getPredicate(Root<T> root, SearchCriteria criteria, CriteriaBuilder builder) {
@@ -29,6 +39,9 @@ public enum SearchOperation {
         }
     },
 
+    /**
+     * Operacja GREATER_THAN_EQUAL generuje predykat "greaterThanOrEqualTo" dla danego kryterium.
+     */
     GREATER_THAN_EQUAL {
         @Override
         public <T> Predicate getPredicate(Root<T> root, SearchCriteria criteria, CriteriaBuilder builder) {
@@ -39,6 +52,9 @@ public enum SearchOperation {
         }
     },
 
+    /**
+     * Operacja LESS_THAN_EQUAL generuje predykat "lessThanOrEqualTo" dla danego kryterium.
+     */
     LESS_THAN_EQUAL {
         @Override
         public <T> Predicate getPredicate(Root<T> root, SearchCriteria criteria, CriteriaBuilder builder) {
@@ -49,6 +65,9 @@ public enum SearchOperation {
         }
     },
 
+    /**
+     * Operacja NOT_EQUAL generuje predykat "notEqual" dla danego kryterium.
+     */
     NOT_EQUAL {
         @Override
         public <T> Predicate getPredicate(Root<T> root, SearchCriteria criteria, CriteriaBuilder builder) {
@@ -58,6 +77,9 @@ public enum SearchOperation {
         }
     },
 
+    /**
+     * Operacja EQUAL generuje predykat "equal" dla danego kryterium.
+     */
     EQUAL {
         @Override
         public <T> Predicate getPredicate(Root<T> root, SearchCriteria criteria, CriteriaBuilder builder) {
@@ -66,6 +88,10 @@ public enum SearchOperation {
             );
         }
     },
+
+    /**
+     * Operacja EQUAL_JOIN generuje predykat "equal" dla złączenia (join) dwóch encji.
+     */
     EQUAL_JOIN {
         @Override
         public <T> Predicate getPredicate(Root<T> root, SearchCriteria criteria, CriteriaBuilder builder) {
@@ -82,6 +108,9 @@ public enum SearchOperation {
         }
     },
 
+    /**
+     * Operacja EQUAL_JOIN_USER generuje predykat "equal" dla złączenia (join) danej encji z encją User.
+     */
     EQUAL_JOIN_USER {
         @Override
         public <T> Predicate getPredicate(Root<T> root, SearchCriteria criteria, CriteriaBuilder builder) {
@@ -95,6 +124,9 @@ public enum SearchOperation {
         }
     },
 
+    /**
+     * Operacja MATCH_JOIN generuje predykat "match" dla złączenia (join) dwóch encji.
+     */
     MATCH_JOIN {
         @Override
         public <T> Predicate getPredicate(Root<T> root, SearchCriteria criteria, CriteriaBuilder builder) {
@@ -108,6 +140,10 @@ public enum SearchOperation {
             );
         }
     },
+
+    /**
+     * Operacja MATCH_JOIN_LIST generuje predykat "match" dla złączenia (join) dwóch list.
+     */
     MATCH_JOIN_LIST {
         @Override
         public <T> Predicate getPredicate(Root<T> root, SearchCriteria criteria, CriteriaBuilder builder) {
@@ -122,7 +158,11 @@ public enum SearchOperation {
 
         }
     },
-    MATCH_JOIN_LIST_OBJECT{
+
+    /**
+     * Operacja MATCH_JOIN_LIST_OBJECT generuje predykat "match" dla złączenia (join) dwóch list encji.
+     */
+    MATCH_JOIN_LIST_OBJECT {
         @Override
         public <T> Predicate getPredicate(Root<T> root, SearchCriteria criteria, CriteriaBuilder builder) {
             String[] memberAndField = criteria.getKey().split("\\.", 3);
@@ -138,6 +178,9 @@ public enum SearchOperation {
         }
     },
 
+    /**
+     * Operacja MATCH_JOIN_BIKE generuje predykat "match" dla złączenia (join) danej encji z encją Bike.
+     */
     MATCH_JOIN_BIKE {
         @Override
         public <T> Predicate getPredicate(Root<T> root, SearchCriteria criteria, CriteriaBuilder builder) {
@@ -149,6 +192,9 @@ public enum SearchOperation {
         }
     },
 
+    /**
+     * Operacja MATCH generuje predykat "match" dla danego kryterium.
+     */
     MATCH {
         @Override
         public <T> Predicate getPredicate(Root<T> root, SearchCriteria criteria, CriteriaBuilder builder) {
@@ -159,6 +205,9 @@ public enum SearchOperation {
         }
     },
 
+    /**
+     * Operacja MATCH_START generuje predykat "match" dla danego kryterium na początku przedziału.
+     */
     MATCH_START {
         @Override
         public <T> Predicate getPredicate(Root<T> root, SearchCriteria criteria, CriteriaBuilder builder) {
@@ -169,6 +218,9 @@ public enum SearchOperation {
         }
     },
 
+    /**
+     * Operacja MATCH_END generuje predykat "match" dla danego kryterium na końcu przedziału.
+     */
     MATCH_END {
         @Override
         public <T> Predicate getPredicate(Root<T> root, SearchCriteria criteria, CriteriaBuilder builder) {
@@ -179,6 +231,9 @@ public enum SearchOperation {
         }
     },
 
+    /**
+     * Operacja IN generuje predykat "in" dla danego kryterium.
+     */
     IN {
         @Override
         public <T> Predicate getPredicate(Root<T> root, SearchCriteria criteria, CriteriaBuilder builder) {
@@ -188,6 +243,9 @@ public enum SearchOperation {
         }
     },
 
+    /**
+     * Operacja NOT_IN generuje predykat "notIn" dla danego kryterium.
+     */
     NOT_IN {
         @Override
         public <T> Predicate getPredicate(Root<T> root, SearchCriteria criteria, CriteriaBuilder builder) {
@@ -197,6 +255,9 @@ public enum SearchOperation {
         }
     },
 
+    /**
+     * Operacja EQUAL_NULL generuje predykat "equal" dla danego kryterium równego wartości NULL.
+     */
     EQUAL_NULL {
         @Override
         public <T> Predicate getPredicate(Root<T> root, SearchCriteria criteria, CriteriaBuilder builder) {
@@ -204,6 +265,9 @@ public enum SearchOperation {
         }
     },
 
+    /**
+     * Operacja NOT_EQUAL_NULL generuje predykat "equal" dla danego kryterium różnego od wartości NULL.
+     */
     NOT_EQUAL_NULL {
         @Override
         public <T> Predicate getPredicate(Root<T> root, SearchCriteria criteria, CriteriaBuilder builder) {
@@ -211,6 +275,9 @@ public enum SearchOperation {
         }
     },
 
+    /**
+     * Operacja GREATER_THAN_EQUAL_DATE generuje predykat "greaterThanEqual" dla danego kryterium, który jest datą.
+     */
     GREATER_THAN_EQUAL_DATE {
         @Override
         public <T> Predicate getPredicate(Root<T> root, SearchCriteria criteria, CriteriaBuilder builder) {
@@ -221,6 +288,9 @@ public enum SearchOperation {
         }
     },
 
+    /**
+     * Operacja GREATER_THAN_DATE generuje predykat "greaterThan" dla danego kryterium, który jest datą.
+     */
     GREATER_THAN_DATE {
         @Override
         public <T> Predicate getPredicate(Root<T> root, SearchCriteria criteria, CriteriaBuilder builder) {
@@ -230,6 +300,9 @@ public enum SearchOperation {
         }
     },
 
+    /**
+     * Operacja LESS_THAN_EQUAL_DATE generuje predykat "lessThanEqual" dla danego kryterium, który jest datą.
+     */
     LESS_THAN_EQUAL_DATE {
         @Override
         public <T> Predicate getPredicate(Root<T> root, SearchCriteria criteria, CriteriaBuilder builder) {
@@ -240,6 +313,9 @@ public enum SearchOperation {
         }
     },
 
+    /**
+     * Operacja LESS_THAN_DATE generuje predykat "lessThan" dla danego kryterium, który jest datą.
+     */
     LESS_THAN_DATE {
         @Override
         public <T> Predicate getPredicate(Root<T> root, SearchCriteria criteria, CriteriaBuilder builder) {
@@ -249,6 +325,9 @@ public enum SearchOperation {
         }
     },
 
+    /**
+     * Operacja EQUAL_DATE generuje predykat "equal" dla danego kryterium, który jest datą.
+     */
     EQUAL_DATE {
         @Override
         public <T> Predicate getPredicate(Root<T> root, SearchCriteria criteria, CriteriaBuilder builder) {
@@ -258,6 +337,9 @@ public enum SearchOperation {
         }
     },
 
+    /**
+     * Operacja NOT_EQUAL_DATE generuje predykat "notEqual" dla danego kryterium, który jest datą.
+     */
     NOT_EQUAL_DATE {
         @Override
         public <T> Predicate getPredicate(Root<T> root, SearchCriteria criteria, CriteriaBuilder builder) {
@@ -267,5 +349,14 @@ public enum SearchOperation {
         }
     };
 
+    /**
+     * Abstrakcyjna metoda zwraca predykat na podstawie specyfikacji, używając klas CriteriaBuilder, SearchCriteria i Root.
+     * Wykorzysuje do tego zdefniowane mechanizmy w tym enumie.
+     *
+     * @param root    obiekt Root reprezentujący encję, dla której tworzony jest predykat
+     * @param criteria   obiekt SearchCriteria reprezentujący kryterium wyszukiwania
+     * @param builder obiekt CriteriaBuilder do tworzenia predykatów
+     * @return predykat typu generycznego
+     */
     abstract public <T> Predicate getPredicate(Root<T> root, SearchCriteria criteria, CriteriaBuilder builder);
 }

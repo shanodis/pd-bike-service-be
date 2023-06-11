@@ -25,6 +25,10 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ * Klasa JwtTokenVerifier jest odpowiedzialna za weryfikację tokenu JWT w żądaniach.
+ * Dziedziczy po klasie OncePerRequestFilter, co zapewnia, że filtr zostanie wykonany tylko raz dla każdego żądania.
+ */
 public class JwtTokenVerifier extends OncePerRequestFilter {
     private final AntPathMatcher pathMatcher = new AntPathMatcher();
 
@@ -56,12 +60,28 @@ public class JwtTokenVerifier extends OncePerRequestFilter {
                 "} ";
     }
 
+    /**
+     * Metoda shouldNotFilter sprawdza, czy dla danego żądania nie powinien być stosowany filtr.
+     *
+     * @param request Obiekt HttpServletRequest reprezentujący żądanie HTTP.
+     * @return true, jeśli filtr nie powinien być stosowany dla żądania, w przeciwnym razie false.
+     */
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
         String path = request.getRequestURI();
         return Arrays.stream(EXCLUDED_PATHS).anyMatch(p -> pathMatcher.match(p, path));
     }
 
+    /**
+     * Metoda doFilterInternal wykonuje logikę filtrowania dla tokenu JWT.
+     * Weryfikuje poprawność tokenu, ustawia uwierzytelnienie użytkownika na podstawie tokenu i przepuszcza żądanie dalej w łańcuchu filtrów.
+     *
+     * @param request     Obiekt HttpServletRequest reprezentujący żądanie HTTP.
+     * @param response    Obiekt HttpServletResponse reprezentujący odpowiedź HTTP.
+     * @param filterChain Obiekt FilterChain umożliwiający przepuszczenie żądania dalej w łańcuchu filtrów.
+     * @throws ServletException Jeśli wystąpił błąd podczas przetwarzania żądania.
+     * @throws IOException      Jeśli wystąpił błąd wejścia-wyjścia podczas przetwarzania żądania.
+     */
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String authorizationHeader = request.getHeader("Authorization");

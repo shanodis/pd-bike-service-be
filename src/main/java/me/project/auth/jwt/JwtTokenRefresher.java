@@ -23,11 +23,24 @@ import java.util.UUID;
 
 import static me.project.enums.JwtExpire.ACCESS_TOKEN;
 
+/**
+ * Klasa JwtTokenRefresher jest odpowiedzialna za odświeżanie tokenu JWT.
+ * Jest używana do generowania nowego tokenu dostępowego na podstawie tokenu odświeżającego.
+ */
 @Service
 @AllArgsConstructor
 public class JwtTokenRefresher {
     private final IUserService userService;
 
+    /**
+     * Metoda refreshToken odświeża token JWT na podstawie przekazanego żądania i odpowiedzi HTTP.
+     * Wykorzystuje token odświeżający, aby uzyskać nowy token dostępowy dla użytkownika.
+     * Aktualizuje nagłówek "Authorization" w odpowiedzi z nowym tokenem dostępowym.
+     *
+     * @param request  Obiekt HttpServletRequest reprezentujący żądanie HTTP.
+     * @param response Obiekt HttpServletResponse reprezentujący odpowiedź HTTP.
+     * @throws ResponseStatusException Jeśli wystąpił błąd podczas odświeżania tokenu lub token odświeżający nie został przekazany.
+     */
     public void refreshToken(HttpServletRequest request, HttpServletResponse response) {
 
         String authorizationHeader = request.getHeader("Authorization-Refresh");

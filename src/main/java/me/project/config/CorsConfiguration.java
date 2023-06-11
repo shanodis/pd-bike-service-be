@@ -8,8 +8,18 @@ import org.springframework.web.filter.CorsFilter;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * Klasa konfiguracyjna CorsConfiguration definiuje ustawienia obsługi żądań CORS (Cross-Origin Resource Sharing).
+ * Umożliwia komunikację między różnymi domenami/serwerami.
+ */
 @Configuration
 public class CorsConfiguration {
+
+    /**
+     * Definiuje filtr CorsFilter, który obsługuje żądania CORS.
+     *
+     * @return Obiekt CorsFilter, który implementuje obsługę żądań CORS.
+     */
     @Bean
     public CorsFilter corsFilter() {
         org.springframework.web.cors.CorsConfiguration corsConfiguration = new org.springframework.web.cors.CorsConfiguration();

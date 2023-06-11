@@ -3,7 +3,6 @@ package me.project.config;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import me.project.auth.CustomWebAuthenticationDetailsSource;
-import me.project.auth.enums.AppUserRole;
 import me.project.auth.formLogin.FormLoginHelper;
 import me.project.auth.jwt.JwtTokenVerifier;
 import me.project.service.user.UserService;
@@ -20,6 +19,10 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
+/**
+ * Klasa konfiguracyjna ApplicationSecurityConfig definiuje ustawienia bezpieczeństwa aplikacji.
+ * Rozszerza klasę WebSecurityConfigurerAdapter, co umożliwia dostosowanie konfiguracji zabezpieczeń dla aplikacji webowej.
+ */
 @Configuration
 @AllArgsConstructor
 @EnableWebSecurity
@@ -28,6 +31,7 @@ public class ApplicationSecurityConfig extends WebSecurityConfigurerAdapter {
     private final UserService userService;
     private final CustomWebAuthenticationDetailsSource authenticationDetailsSource;
 
+    // Stała przechowująca listę ścieżek, które są wyłączone z autoryzacji
     private static final String[] AUTH_WHITELIST = {
             // -- Swagger UI v2
             "/v2/api-docs",
@@ -45,6 +49,9 @@ public class ApplicationSecurityConfig extends WebSecurityConfigurerAdapter {
             "/api/v1/auth/**"
     };
 
+    /**
+     * Konfiguracja zabezpieczeń HTTP.
+     */
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.cors()
@@ -71,11 +78,21 @@ public class ApplicationSecurityConfig extends WebSecurityConfigurerAdapter {
                 );
     }
 
+    /**
+     * Definiuje bean AuthenticationFailureHandler.
+     *
+     * @return Obiekt AuthenticationFailureHandler, który obsługuje błędy uwierzytelniania.
+     */
     @Bean
     public AuthenticationFailureHandler authenticationFailureHandler() {
         return new FormLoginHelper(userService, new ObjectMapper());
     }
 
+    /**
+     * Definiuje bean AuthenticationSuccessHandler.
+     *
+     * @return Obiekt AuthenticationSuccessHandler, który obsługuje poprawne uwierzytelnianie.
+     */
     @Bean
     public AuthenticationSuccessHandler authenticationSuccessHandler() {
         return new FormLoginHelper(userService, new ObjectMapper());

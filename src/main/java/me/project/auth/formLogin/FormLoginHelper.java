@@ -21,11 +21,25 @@ import java.util.*;
 import static me.project.enums.JwtExpire.ACCESS_TOKEN;
 import static me.project.enums.JwtExpire.REFRESH_TOKEN;
 
+/**
+ * Klasa FormLoginHelper implementuje interfejsy AuthenticationSuccessHandler i AuthenticationFailureHandler.
+ * Służy do obsługi zdarzeń logowania - sukcesu i niepowodzenia uwierzytelnienia.
+ */
 @AllArgsConstructor
 public class FormLoginHelper implements AuthenticationSuccessHandler, AuthenticationFailureHandler {
     private final UserService userService;
     private ObjectMapper objectMapper;
 
+    /**
+     * Metoda onAuthenticationSuccess jest wywoływana, gdy uwierzytelnienie użytkownika zakończyło się sukcesem.
+     * Tworzy nowe tokeny dostępowe (JWT) dla użytkownika i dodaje je jako nagłówki odpowiedzi HTTP.
+     *
+     * @param request        Obiekt HttpServletRequest reprezentujący żądanie HTTP.
+     * @param response       Obiekt HttpServletResponse reprezentujący odpowiedź HTTP.
+     * @param authentication Obiekt Authentication reprezentujący zakończone uwierzytelnienie.
+     * @throws IOException      Jeśli wystąpił błąd podczas zapisu do strumienia odpowiedzi.
+     * @throws ServletException Jeśli wystąpił błąd podczas przetwarzania żądania.
+     */
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
         try {
@@ -61,6 +75,15 @@ public class FormLoginHelper implements AuthenticationSuccessHandler, Authentica
         }
     }
 
+    /**
+     * Metoda onAuthenticationFailure jest wywoływana, gdy uwierzytelnienie użytkownika zakończyło się niepowodzeniem.
+     * Ustawia odpowiedni status odpowiedzi HTTP i zwraca komunikat o błędzie w formacie JSON.
+     *
+     * @param request   Obiekt HttpServletRequest reprezentujący żądanie HTTP.
+     * @param response  Obiekt HttpServletResponse reprezentujący odpowiedź HTTP.
+     * @param exception Wyjątek AuthenticationException reprezentujący błąd uwierzytelnienia.
+     * @throws IOException Jeśli wystąpił błąd podczas zapisu do strumienia odpowiedzi.
+     */
     @Override
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException {
         response.setStatus(HttpStatus.UNAUTHORIZED.value());

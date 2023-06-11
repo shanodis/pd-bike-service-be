@@ -10,16 +10,13 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.stream.Collectors;
-
+/**
+ * Klasa CustomAuthenticationProvider implementuje interfejs AuthenticationProvider
+ * i dostarcza niestandardową logikę uwierzytelniania użytkownika.
+ */
 @AllArgsConstructor
 @Component
 public class CustomAuthenticationProvider implements AuthenticationProvider {
@@ -27,6 +24,13 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final TotpService totpService;
 
+    /**
+     * Metoda authenticate jest odpowiedzialna za uwierzytelnianie użytkownika na podstawie dostarczonych danych uwierzytelniających.
+     *
+     * @param authentication Obiekt Authentication zawierający informacje o uwierzytelnianiu (np. nazwa użytkownika i hasło).
+     * @return Obiekt Authentication reprezentujący uwierzytelnionego użytkownika.
+     * @throws AuthenticationException Rzucany w przypadku niepowodzenia uwierzytelniania.
+     */
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         String verificationCode = ((CustomWebAuthenticationDetails) authentication.getDetails()).getVerificationCode();
@@ -45,6 +49,12 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
         return new UsernamePasswordAuthenticationToken(user, password, user.getAuthorities());
     }
 
+    /**
+     * Metoda supports sprawdza, czy dany typ uwierzytelniania jest obsługiwany przez ten dostawca.
+     *
+     * @param aClass Klasa reprezentująca typ uwierzytelniania.
+     * @return true, jeśli dostawca obsługuje podany typ uwierzytelniania, w przeciwnym razie false.
+     */
     @Override
     public boolean supports(Class<?> aClass) {
         return aClass.equals(UsernamePasswordAuthenticationToken.class);
