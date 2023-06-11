@@ -3,6 +3,7 @@ package me.project.service.user;
 import lombok.AllArgsConstructor;
 import me.project.auth.enums.AppUserRole;
 import me.project.dtos.request.PageRequestDTO;
+import me.project.dtos.request.address.AddressCreateDTO;
 import me.project.dtos.request.address.AddressUpdateDTO;
 import me.project.dtos.request.company.CompanyCreateDTO;
 import me.project.dtos.request.company.CompanyUpdateDTO;
@@ -168,12 +169,12 @@ public class UserService implements IUserService {
             boolean createAddress = !createDTO.getStreetName().isEmpty() && !createDTO.getPostCode().isEmpty() && !createDTO.getCity().isEmpty();
             if (createAddress)
                 user.setAddress(addressService.createAddressIfNotExists(
-                        new Address(
-                                user,
-                                countryService.getCountryById(createDTO.getCountryId()),
+                        new AddressCreateDTO(
                                 createDTO.getStreetName(),
                                 createDTO.getPostCode(),
-                                createDTO.getCity()
+                                createDTO.getCity(),
+                                countryService.getCountryById(createDTO.getCountryId()),
+                                user
                         )
                 ));
         }
@@ -217,12 +218,12 @@ public class UserService implements IUserService {
         if (createAddressPresent && createAddress)
             user.setAddress(
                     addressService.createAddressIfNotExists(
-                            new Address(
-                                    user,
-                                    countryService.getCountryById(clientCreateDTO.getCountryId()),
+                            new AddressCreateDTO(
                                     clientCreateDTO.getStreetName(),
                                     clientCreateDTO.getPostCode(),
-                                    clientCreateDTO.getCity()
+                                    clientCreateDTO.getCity(),
+                                    countryService.getCountryById(clientCreateDTO.getCountryId()),
+                                    user
                             )
                     ));
 
@@ -434,10 +435,10 @@ public class UserService implements IUserService {
     }
 
     public void deleteUserById(UUID id) {
-        userRepository.findById(id).orElseThrow(
+        User user = userRepository.findById(id).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User with given id " + id + " doesn't exist in database!")
         );
-        userRepository.deleteById(id);
+        userRepository.deleteById(user.getUserId());
     }
 
     public boolean existsByEmail(String email) {

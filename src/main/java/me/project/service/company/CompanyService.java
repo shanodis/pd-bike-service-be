@@ -20,16 +20,16 @@ public class CompanyService implements ICompanyService{
 
     private final CompanyRepository companyRepository;
 
-    private final static String COMPANY_NOT_FOUND = "Company with id %s not found";
+    private static final String COMPANY_NOT_FOUND = "Company with id %s not found";
 
     @Override
     public Company getCompanyByUser(User user) {
         return companyRepository.getCompanyByUser(user);
     }
 
-    public Company getCompanyById(UUID CompanyId){
-        return companyRepository.findById(CompanyId).orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.NOT_FOUND,String.format(COMPANY_NOT_FOUND,CompanyId))
+    public Company getCompanyById(UUID companyId){
+        return companyRepository.findById(companyId).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND,String.format(COMPANY_NOT_FOUND,companyId))
         );
     }
 
@@ -54,9 +54,9 @@ public class CompanyService implements ICompanyService{
     }
 
     @Transactional
-    public void updateCompany(UUID CompanyId, CompanyUpdateDTO companyUpdateDto){
-        Company oldCompany = companyRepository.findById(CompanyId).orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.NOT_FOUND,String.format(COMPANY_NOT_FOUND,CompanyId))
+    public void updateCompany(UUID companyId, CompanyUpdateDTO companyUpdateDto){
+        Company oldCompany = companyRepository.findById(companyId).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND,String.format(COMPANY_NOT_FOUND,companyId))
         );
 
         oldCompany.setCompanyName(companyUpdateDto.getCompanyName());
@@ -65,12 +65,12 @@ public class CompanyService implements ICompanyService{
         companyRepository.save(oldCompany);
     }
 
-    public void deleteCompanyById(UUID CompanyId){
-        companyRepository.findById(CompanyId).orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.NOT_FOUND,String.format(COMPANY_NOT_FOUND,CompanyId))
+    public void deleteCompanyById(UUID companyId) throws ResponseStatusException {
+        Company company = companyRepository.findById(companyId).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND,String.format(COMPANY_NOT_FOUND,companyId))
         );
 
-        companyRepository.deleteById(CompanyId);
+        companyRepository.deleteById(company.getCompanyId());
     }
 
 }

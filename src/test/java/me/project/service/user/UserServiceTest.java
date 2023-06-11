@@ -2,6 +2,7 @@ package me.project.service.user;
 
 import me.project.auth.enums.AppUserRole;
 import me.project.dtos.request.PageRequestDTO;
+import me.project.dtos.request.address.AddressCreateDTO;
 import me.project.dtos.request.address.AddressUpdateDTO;
 import me.project.dtos.request.company.CompanyCreateDTO;
 import me.project.dtos.request.company.CompanyUpdateDTO;
@@ -497,7 +498,7 @@ class UserServiceTest {
         when(bCryptPasswordEncoder.encode(createDTO.getPassword())).thenReturn("encodedPassword");
         when(companyService.createCompanyIfNotExists(any(CompanyCreateDTO.class))).thenReturn(company);
         when(countryService.getCountryById(createDTO.getCountryId())).thenReturn(address.getCountry());
-        when(addressService.createAddressIfNotExists(any(Address.class))).thenReturn(address);
+        when(addressService.createAddressIfNotExists(any(AddressCreateDTO.class))).thenReturn(address);
 
         // call the method being tested
         User result = userService.createAppUser(createDTO);
@@ -678,7 +679,7 @@ class UserServiceTest {
         when(userRepository.existsByEmail(createDTO.getEmail())).thenReturn(false);
         when(bCryptPasswordEncoder.encode(createDTO.getPassword())).thenReturn("encodedPassword");
         when(countryService.getCountryById(createDTO.getCountryId())).thenReturn(address.getCountry());
-        when(addressService.createAddressIfNotExists(any(Address.class))).thenReturn(address);
+        when(addressService.createAddressIfNotExists(any(AddressCreateDTO.class))).thenReturn(address);
 
         // call the method being tested
         User result = userService.createAppUser(createDTO);
@@ -777,7 +778,7 @@ class UserServiceTest {
             user.setUserId(UUID.randomUUID());
             return user;
         });
-        when(addressService.createAddressIfNotExists(any(Address.class))).thenReturn(new Address(user, new Country(), "Main St.", "123123", "City"));
+        when(addressService.createAddressIfNotExists(any(AddressCreateDTO.class))).thenReturn(new Address(user, new Country(), "Main St.", "123123", "City"));
 
         // call the method being tested
         UUID userId = userService.createCustomer(clientCreateDTO);
@@ -785,7 +786,7 @@ class UserServiceTest {
         // assert that the user and address were created and saved
         assertNotNull(userId);
         verify(userRepository, times(2)).save(any(User.class));
-        verify(addressService, times(1)).createAddressIfNotExists(any(Address.class));
+        verify(addressService, times(1)).createAddressIfNotExists(any(AddressCreateDTO.class));
         verify(emailService, times(1)).send(any(), any(), any());
     }
 
@@ -814,7 +815,7 @@ class UserServiceTest {
             return user;
         });
         when(companyService.createCompanyIfNotExists(any(CompanyCreateDTO.class))).thenReturn(new Company(companyId, "ACME Inc.", "1234567890", null));
-        when(addressService.createAddressIfNotExists(any(Address.class))).thenReturn(new Address(user, new Country(), "Main St.", "123", "City"));
+        when(addressService.createAddressIfNotExists(any(AddressCreateDTO.class))).thenReturn(new Address(user, new Country(), "Main St.", "123", "City"));
 
         // call the method being tested
         UUID userId = userService.createCustomer(clientCreateDTO);
@@ -823,7 +824,7 @@ class UserServiceTest {
         assertNotNull(userId);
         verify(userRepository, times(2)).save(any(User.class));
         verify(companyService, times(1)).createCompanyIfNotExists(any(CompanyCreateDTO.class));
-        verify(addressService, times(1)).createAddressIfNotExists(any(Address.class));
+        verify(addressService, times(1)).createAddressIfNotExists(any(AddressCreateDTO.class));
         verify(emailService, times(1)).send(any(), any(), any());
     }
 

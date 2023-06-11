@@ -141,10 +141,10 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>com.dukescript.api</groupId>
-			<artifactId>junit-browser-runner</artifactId>
-			<version>1.0</version>
-			<scope>compile</scope>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.13.2</version>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.google.code.gson</groupId>
@@ -175,6 +175,11 @@
 	<build>
 		<plugins>
 			<plugin>
+				<groupId>org.sonarsource.scanner.maven</groupId>
+				<artifactId>sonar-maven-plugin</artifactId>
+				<version>3.9.1.2184</version>
+			</plugin>
+			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 				<configuration>
@@ -192,17 +197,6 @@
 				<groupId>com.github.ulisesbocchio</groupId>
 				<artifactId>jasypt-maven-plugin</artifactId>
 				<version>3.0.4</version>
-			</plugin>
-			<plugin>
-				<groupId>com.heroku.sdk</groupId>
-				<artifactId>heroku-maven-plugin</artifactId>
-				<version>3.0.3</version>
-				<configuration>
-					<configVars>
-						<PORT>8080</PORT>
-						<JAVA_OPTS>-Xss512k -XX:+UseCompressedOops</JAVA_OPTS>
-					</configVars>
-				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -256,11 +250,6 @@
 					<source>10</source>
 					<target>10</target>
 				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.sonarsource.scanner.maven</groupId>
-				<artifactId>sonar-maven-plugin</artifactId>
-				<version>3.9.1.2184</version>
 			</plugin>
 		</plugins>
 	</build>

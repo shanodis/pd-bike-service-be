@@ -18,29 +18,29 @@ public class OrderPartService implements IOrderPartService {
     private final OrderPartRepository orderPartRepository;
     private final OrderRepository orderRepository;
 
-    private String ORDER_PART_NOT_FOUND(UUID orderPartId) {
+    private String orderPartNotFound(UUID orderPartId) {
         return String.format("Order Part with id %s not found", orderPartId);
     }
 
-    private String ORDER_NOT_FOUND(UUID orderId) {
+    private String orderNotFound(UUID orderId) {
         return String.format("Order with id %s not found", orderId);
     }
 
     public OrderPart getOrderPartById(UUID orderPartId) {
         return orderPartRepository.findById(orderPartId).orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, ORDER_PART_NOT_FOUND(orderPartId))
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, orderPartNotFound(orderPartId))
         );
     }
 
     public UUID createOrderPart(UUID orderId, OrderPartCreateDTO request) {
-        orderRepository.findById(orderId).orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, ORDER_NOT_FOUND(orderId))
+        Order order = orderRepository.findById(orderId).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, orderNotFound(orderId))
         );
 
         OrderPart orderPart = new OrderPart();
 
         Order tmp = new Order();
-        tmp.setOrderId(orderId);
+        tmp.setOrderId(order.getOrderId());
         orderPart.setOrder(tmp);
 
         orderPart.setOrderCode(request.getOrderCode().trim());

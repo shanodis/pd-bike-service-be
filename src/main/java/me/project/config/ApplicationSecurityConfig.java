@@ -16,6 +16,8 @@ import org.springframework.security.web.authentication.AuthenticationFailureHand
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import static org.springframework.security.config.Customizer.withDefaults;
+
 @Configuration
 @AllArgsConstructor
 @EnableWebSecurity
@@ -36,6 +38,13 @@ public class ApplicationSecurityConfig extends WebSecurityConfigurerAdapter {
                 .addFilterAfter(new JwtTokenVerifier(), UsernamePasswordAuthenticationFilter.class)
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
+                .headers(headers -> headers
+                        .contentTypeOptions(withDefaults())
+                        .xssProtection(withDefaults())
+                        .cacheControl(withDefaults())
+                        .httpStrictTransportSecurity(withDefaults())
+                        .frameOptions(withDefaults()
+                        ))
                 .authorizeRequests()
                 .antMatchers("/index", "/css/*", "/js/*", "/swagger-ui.html").permitAll()
         ;

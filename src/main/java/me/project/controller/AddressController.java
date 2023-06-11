@@ -1,5 +1,6 @@
 package me.project.controller;
 
+import me.project.dtos.request.address.AddressCreateDTO;
 import me.project.dtos.request.address.AddressUpdateDTO;
 import me.project.entitiy.Address;
 import me.project.service.address.IAddressService;
@@ -15,9 +16,9 @@ import java.util.UUID;
 public class AddressController {
     private final IAddressService addressService;
 
-    @GetMapping("{AddressId}")
-    public Address getAddressById(@PathVariable UUID AddressId) {
-        return addressService.getAddressById(AddressId);
+    @GetMapping("{addressId}")
+    public Address getAddressById(@PathVariable UUID addressId) {
+        return addressService.getAddressById(addressId);
     }
 
     @GetMapping
@@ -26,17 +27,17 @@ public class AddressController {
     }
 
     @PostMapping
-    public Address createAddress(@RequestBody Address NewAddress) {
-        return addressService.createAddressIfNotExists(NewAddress);
+    public Address createAddress(@RequestBody AddressCreateDTO newAddress) {
+        return addressService.createAddressIfNotExists(newAddress);
     }
 
-    @PutMapping("{AddressId}")
-    public void updateAddress(@PathVariable UUID AddressId,@RequestBody AddressUpdateDTO addressUpdateDTO) {
-        addressService.updateAddress(AddressId, addressUpdateDTO);
+    @PutMapping("{addressId}")
+    public void updateAddress(@PathVariable UUID addressId,@RequestBody AddressUpdateDTO addressUpdateDTO) {
+        addressService.updateAddress(addressId, addressUpdateDTO);
     }
 
-    @DeleteMapping("{AddressId}")
-    public void deleteAddress(@PathVariable UUID AddressId) {
-        addressService.deleteAddress(AddressId);
+    @DeleteMapping("{addressId}")
+    public void deleteAddress(@PathVariable UUID addressId) {
+        addressService.deleteAddress(addressId);
     }
 }

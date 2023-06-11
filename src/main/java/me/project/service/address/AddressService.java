@@ -1,5 +1,6 @@
 package me.project.service.address;
 
+import me.project.dtos.request.address.AddressCreateDTO;
 import me.project.entitiy.User;
 import me.project.dtos.request.address.AddressUpdateDTO;
 import me.project.entitiy.Address;
@@ -18,8 +19,8 @@ public class AddressService implements IAddressService {
 
     private final AddressRepository addressRepository;
 
-    private String NOT_FOUND(UUID AddressId) {
-        return "Address with id" + AddressId + " doesn't exists in database";
+    private String notFound(UUID addressId) {
+        return "Address with id" + addressId + " doesn't exists in database";
     }
 
     @Override
@@ -27,9 +28,9 @@ public class AddressService implements IAddressService {
         return addressRepository.getAddressByUser(user);
     }
 
-    public Address getAddressById(UUID AddressId) {
-        return addressRepository.findById(AddressId).orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, NOT_FOUND(AddressId))
+    public Address getAddressById(UUID addressId) {
+        return addressRepository.findById(addressId).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, notFound(addressId))
         );
     }
 
@@ -37,7 +38,7 @@ public class AddressService implements IAddressService {
         return addressRepository.findAll();
     }
 
-    public Address createAddressIfNotExists(Address newAddress) {
+    public Address createAddressIfNotExists(AddressCreateDTO newAddress) {
 
         if(addressRepository.existsByStreetNameAndCityAndPostCodeAndCountry(
                 newAddress.getStreetName(),
@@ -53,14 +54,18 @@ public class AddressService implements IAddressService {
             );
         }
 
-        addressRepository.save(newAddress);
-
-        return newAddress;
+        return addressRepository.save(new Address(
+                newAddress.getUser(),
+                newAddress.getCountry(),
+                newAddress.getStreetName(),
+                newAddress.getPostCode(),
+                newAddress.getCity()
+        ));
     }
 
-    public void updateAddress(UUID AddressId, AddressUpdateDTO addressUpdateDTO) {
-        Address oldAddress = addressRepository.findById(AddressId).orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, NOT_FOUND(AddressId))
+    public void updateAddress(UUID addressId, AddressUpdateDTO addressUpdateDTO) {
+        Address oldAddress = addressRepository.findById(addressId).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, notFound(addressId))
         );
 
         oldAddress = addressUpdateDTO.convertToEntity(oldAddress);
@@ -68,10 +73,10 @@ public class AddressService implements IAddressService {
         addressRepository.save(oldAddress);
     }
 
-    public void deleteAddress(UUID AddressId) {
-        if(!addressRepository.existsById(AddressId))
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, NOT_FOUND(AddressId));
+    public void deleteAddress(UUID addressId) {
+        if(!addressRepository.existsById(addressId))
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, notFound(addressId));
 
-        addressRepository.deleteById(AddressId);
+        addressRepository.deleteById(addressId);
     }
 }

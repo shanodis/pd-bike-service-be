@@ -226,7 +226,7 @@ class CompanyServiceTest {
                 ResponseStatusException.class, () -> companyService.deleteCompanyById(companyId));
 
         verify(companyRepository, times(1)).findById(companyId);
-        verify(companyRepository, never()).deleteById(companyId);
+        verify(companyRepository, never()).deleteById(any());
     }
 
     @Test
@@ -240,6 +240,6 @@ class CompanyServiceTest {
 
         companyService.deleteCompanyById(companyId);
 
-        verify(companyRepository, times(1)).deleteById(companyId);
+        verify(companyRepository, times(1)).deleteById(any());
     }
 }

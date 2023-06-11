@@ -1,5 +1,6 @@
 package me.project.service.address;
 
+import me.project.dtos.request.address.AddressCreateDTO;
 import me.project.dtos.request.address.AddressUpdateDTO;
 import me.project.entitiy.Address;
 import me.project.entitiy.Country;
@@ -186,7 +187,7 @@ class AddressServiceTest {
     @Test
     @DisplayName("Should return existing address when the address already exists")
     void createAddressIfNotExistsWhenAddressExists() {
-        Address existingAddress = new Address(user, country, "Test Street", "12345", "Test City");
+        AddressCreateDTO existingAddress = new AddressCreateDTO("Main St.", "1234", "Test Street", new Country("Poland"), user);
         when(addressRepository.existsByStreetNameAndCityAndPostCodeAndCountry(
                 existingAddress.getStreetName(),
                 existingAddress.getCity(),
@@ -194,23 +195,34 @@ class AddressServiceTest {
                 existingAddress.getCountry()))
                 .thenReturn(true);
 
+        Address address = existingAddress.convertToEntity();
+
         when(addressRepository.getByStreetNameAndCityAndPostCodeAndCountry(
                 existingAddress.getStreetName(),
                 existingAddress.getCity(),
                 existingAddress.getPostCode(),
                 existingAddress.getCountry()))
-                .thenReturn(existingAddress);
+                .thenReturn(address);
 
         Address result = addressService.createAddressIfNotExists(existingAddress);
 
-        verify(addressRepository, times(0)).save(existingAddress);
-        assertEquals(existingAddress, result);
+        verify(addressRepository, times(0)).save(any());
+        assertEquals(existingAddress.getStreetName(), result.getStreetName());
+        assertEquals(existingAddress.getPostCode(), result.getPostCode());
+        assertEquals(existingAddress.getCity(), result.getCity());
+        assertEquals(existingAddress.getUser().getUserId(), result.getUser().getUserId());
+        assertEquals(existingAddress.getCountry().getCountryName(), result.getCountry().getCountryName());
     }
 
     @Test
     @DisplayName("Should create and return a new address when the address does not exist")
     void createAddressIfNotExistsWhenAddressDoesNotExist() {
-        Address newAddress = new Address(user, country, "Test Street", "12345", "Test City");
+        AddressCreateDTO newAddress = new AddressCreateDTO();
+        newAddress.setCity("Test Street");
+        newAddress.setCountry(new Country("Poland"));
+        newAddress.setUser(user);
+        newAddress.setStreetName("Main St.");
+        newAddress.setPostCode("1234");
 
         when(addressRepository.existsByStreetNameAndCityAndPostCodeAndCountry(
                 newAddress.getStreetName(),
@@ -219,12 +231,18 @@ class AddressServiceTest {
                 newAddress.getCountry()))
                 .thenReturn(false);
 
-        when(addressRepository.save(newAddress)).thenReturn(newAddress);
+        Address address = newAddress.convertToEntity();
+
+        when(addressRepository.save(any())).thenReturn(address);
 
         Address result = addressService.createAddressIfNotExists(newAddress);
 
         assertNotNull(result);
-        assertEquals(newAddress, result);
+        assertEquals(newAddress.getStreetName(), result.getStreetName());
+        assertEquals(newAddress.getPostCode(), result.getPostCode());
+        assertEquals(newAddress.getCity(), result.getCity());
+        assertEquals(newAddress.getUser().getUserId(), result.getUser().getUserId());
+        assertEquals(newAddress.getCountry().getCountryName(), result.getCountry().getCountryName());
 
         verify(addressRepository, times(1))
                 .existsByStreetNameAndCityAndPostCodeAndCountry(
@@ -233,6 +251,6 @@ class AddressServiceTest {
                         newAddress.getPostCode(),
                         newAddress.getCountry());
 
-        verify(addressRepository, times(1)).save(newAddress);
+        verify(addressRepository, times(1)).save(any());
     }
 }

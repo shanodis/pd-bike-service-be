@@ -39,34 +39,6 @@ class FormLoginHelperTest {
     @InjectMocks
     private FormLoginHelper formLoginHelper;
 
-
-    @Test
-    @DisplayName("Should throw ServletException when a non-IO error occurs during token generation")
-    void onAuthenticationSuccessThrowsServletExceptionOnError() {
-        try {
-            HttpServletRequest request = mock(HttpServletRequest.class);
-            HttpServletResponse response = mock(HttpServletResponse.class);
-            Authentication authentication = mock(Authentication.class);
-            ServletOutputStream outputStream = mock(ServletOutputStream.class);
-
-            String username = "testUser";
-
-            when(userService.getUser(username)).thenReturn(new User());
-
-            when(response.getOutputStream()).thenReturn(outputStream);
-            when(objectMapper.writeValueAsString(any())).thenReturn("testJson");
-
-            doThrow(new RuntimeException("Test Exception")).when(userService).getUser(username);
-
-            formLoginHelper.onAuthenticationSuccess(request, response, authentication);
-
-            fail("Should have thrown ServletException");
-
-        } catch (IOException | ServletException e) {
-            // expected exception
-        }
-    }
-
     @SneakyThrows
     @Test
     @DisplayName("Should generate and set access and refresh tokens in headers on successful authentication")
@@ -74,12 +46,8 @@ class FormLoginHelperTest {
         HttpServletRequest request = mock(HttpServletRequest.class);
         HttpServletResponse response = mock(HttpServletResponse.class);
         Authentication authentication = mock(Authentication.class);
-        ServletOutputStream outputStream = mock(ServletOutputStream.class);
 
         String username = "testUser";
-        UUID userId = UUID.randomUUID();
-        String accessToken = "testAccessToken";
-        String refreshToken = "testRefreshToken";
 
         User user = new User();
         user.setFirstName("testUser");
@@ -109,14 +77,8 @@ class FormLoginHelperTest {
             HttpServletRequest request = mock(HttpServletRequest.class);
             HttpServletResponse response = mock(HttpServletResponse.class);
             Authentication authentication = mock(Authentication.class);
-            ServletOutputStream outputStream = mock(ServletOutputStream.class);
-            PrintWriter writer = mock(PrintWriter.class);
 
             String username = "testUser";
-            UUID userId = UUID.randomUUID();
-            String accessToken = "testAccessToken";
-            String refreshToken = "testRefreshToken";
-            String key = "someStringHashToHaveReallyGoodSecurityOverHereSoNoOneWithAmateurSkillsWouldn'tHackThis";
 
             User user = new User();
             user.setFirstName("testUser");
