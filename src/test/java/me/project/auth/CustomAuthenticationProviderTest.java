@@ -1,5 +1,6 @@
 package me.project.auth;
 
+import me.project.auth.enums.AppUserRole;
 import me.project.entitiy.User;
 import me.project.service.auth.TotpService;
 import me.project.service.user.UserService;
@@ -50,6 +51,7 @@ class CustomAuthenticationProviderTest {
         mockedUser.setPassword("password");
         mockedUser.setIsUsing2FA(true);
         mockedUser.setSecret2FA("secret");
+        mockedUser.setAppUserRole(AppUserRole.CLIENT);
     }
 
 
